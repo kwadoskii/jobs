@@ -1,0 +1,174 @@
+.dropdown-divider{
+  margin: 0 !important;
+}
+
+.dropdown-item{
+  padding: 0.45rem 1.5rem !important;
+}
+
+.ptx{
+  padding-top: 4.5rem !important;
+}
+
+.containerx{
+  margin-top: 136px;
+  min-height: 155px; 
+  background-color: white; 
+  border-radius: 0.95rem; 
+  padding: 25px;
+}
+
+small{
+  font-size: 11px !important;
+}
+
+.radiusx{
+  border-radius: 0.95rem !important; 
+}
+
+.radius-sm{
+  border-radius: 0.45rem !important;
+}
+
+.bg-c{
+  background-color: #f7f8fc;
+}
+
+.wrapper{
+  position: relative;
+  top: 3em;
+  padding: 45px 2.5em !important;
+}
+
+.bluex{
+  background-color: #095dcf;
+  color: white;
+}
+
+.dropdown-dividerx{
+  height: 0;
+  overflow: hidden;
+  margin-top: 4em;
+  margin-bottom: 1.6em;
+  border-top: 1px solid #e9ecef;
+}
+
+.whit{
+  background-color: white;
+}
+
+.fill{
+  flex-grow: 1 !important;
+  min-width: 33.3333% !important;
+  flex: 1 0 33.333333%;
+}
+
+.test:after{
+  background: red;
+  content: "";
+  /* bottom: 0;
+  left: 0;
+  right: 0; */
+  height: 8rem;
+  display: block;
+}
+
+.scrolbar{
+  height: 20px;
+  width: 100%;
+  background: linear-gradient(to right, lightblue ,#095dcf);
+}
+
+.float-rightx{
+  position: relative;
+  /* left: 95.4%; */
+  top: 1.3em;
+}
+
+.mtx{
+  margin-top: 1em !important;
+}
+
+.bg-darkx{
+  background-color: rgba(0,0,0, 0.5);
+  color: white;
+  font-size: 1.13em;
+}
+
+.attachment{
+  font-weight: 500;
+  color: mediumblue;
+}
+
+.logosizex{
+  width: 188px;
+  /* background-position: 50%; */
+  height: 100px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.bg-image{
+  width: 100%;
+  height: 300px;
+  background-size: cover;
+  border-radius: 10px 10px 0 0;
+  background-position: 50%;
+  background-repeat: no-repeat;
+}
+
+.font1-1{
+  font-size: 1.15em;
+}
+
+.hashtag{
+  background-color: #e9ecef;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.article-img{
+  /* padding: 0 3.5rem; */
+  /* padding-top: 195px; */
+}
+
+.article{
+  padding: 2em 1.7em;
+  /* margin-top: 195px; */
+}
+
+.main-article{
+  padding: 0 2em;
+}
+
+button.btn.rounded-pill.btlist{
+  border: 1px solid grey;
+  padding: 0.5em 1.7em;
+  font-size: 1.05em;
+}
+
+.greenx{
+  font-weight: bold;
+  color: #00ae41 !important;
+}
+
+.redx{
+  color: red !important;
+}
+
+.shadow-smx{
+  box-shadow: 0 0.125rem 0.25rem rgba(255,255,255,0.775)!important;
+}
+
+ul{
+  list-style: url('./images/tick.svg');
+}
+
+.linkx{
+  color: blue;
+  cursor: pointer;
+}
+
+.linkx:hover{
+  color: darkblue;
+}
