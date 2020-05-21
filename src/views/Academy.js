@@ -5,7 +5,7 @@ import Navbar from '../container/Navbar'
 import NavbarMenu from '../container/NavbarMenu'
 import Section from '../container/Section'
 import Banner from '../container/Banner'
-// import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
+import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
 // import bgimage2 from '../images/graduating-soon-get-ready-for-working-world.jpg'
 
 

@@ -25,6 +25,15 @@ const userSchema = new Schema({
         to: { type: Date, default: null },
         currently: { type: Boolean }
     }],
+    education: {
+        school: [{ 
+            name: { type: String, trim: true , required: "title is required" },
+            course: { type: String, trim: true , required: "title is required" },
+            degree: { type: String, trim: true , required: "title is required" },
+            from: { type: Date, required: true },
+            to: { type: Date, required: true}
+        }],
+    }
 },
     {
         timestamps: true,

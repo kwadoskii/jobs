@@ -17,10 +17,10 @@ class NavbarMenu extends Component {
     }
 
     componentDidMount(){
-        // axios.get('http://localhost:5000/users/'+this.props.userId)
-        axios.get('http://localhost:5000/users/5ebdd605edd5322c442dc116')
+        axios.get('http://localhost:5000/users/'+this.props.userId)
+        // axios.get('http://localhost:5000/users/5ebdd605edd5322c442dc116')
             .then(user => {
-                console.log(user.data)
+                // console.log(user.data)
                 this.setState({ user: user.data })
             }).catch(err => console.log(err));
     }
@@ -38,7 +38,7 @@ class NavbarMenu extends Component {
                         <Section class={"pt-2 pl-4 pr-4 pb-2"}>
                             <h5>{this.state.user.name.firstname + " " + this.state.user.name.lastname}</h5>
                             <p>{this.state.user.email}</p>
-                            <Link to={ "/profile/" + this.state.user._id }>
+                            <Link to={ "/profile/"}>
                                 <Button class="col-12 btn btn-primary rounded-pill" name={'My SmartProfile'} />
                             </Link>
                             <Section style={{'borderTop': '1px solid #e9ecef', 'height': 0, 'marginTop': '0.7rem', 'overflow': 'hidden'}} />

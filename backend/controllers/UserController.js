@@ -25,6 +25,7 @@ exports.userCreate = function (req, res) {
     user.phone = req.body.phone;
     user.address = req.body.address;
     user.experience = req.body.experience;
+    user.education = req.body.education;
 
     user.save()
         .then(user => {
