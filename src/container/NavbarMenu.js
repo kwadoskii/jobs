@@ -46,7 +46,8 @@ class NavbarMenu extends Component {
                             <Section class="dropdown-divider" />
                             <Link className="dropdown-item" to="/academy">SmartAcademy</Link>
                             <Section class="dropdown-divider" />
-                            <Link className="dropdown-item" to={ "/setting/" + this.state.user._id }>Settings</Link>
+                            <Link className="dropdown-item" to={ "/setting"}>Settings</Link>
+                            {/* <Link className="dropdown-item" to={ "/setting/" + this.state.user._id }>Settings</Link> */}
                             <Section class="dropdown-divider" />
                             <Link className="dropdown-item" to="/signin">Logout</Link>
                         </Section>

@@ -14,7 +14,7 @@ class Setting extends Component {
         return (
             <div>
                 <Navbar class={"navbar navbar-dark fixed-top pt-2 pb-2 pl-4 pr-4"} stylex={{ backgroundColor: 'rgba(9,93,207, 9)' }} imgSize={"35px"} url='/setting'>
-                    <NavbarMenu />
+                    <NavbarMenu userId="5ec6c2604122631efc492d72"/>
                 </Navbar>
 
                 <Section class={"bg-c wrapper p-5"}>
@@ -64,7 +64,7 @@ class Setting extends Component {
                             <Section class={"col-md-11"}>
                                 <p className="font1-1 p-0 m-0">Export my SmartProfile data</p>
                                 <Section class={"mt-2"}>
-                                    <Link href="/setting" className="font1-1 p-0">Export as JSON</Link>
+                                    <Link to="/setting" className="font1-1 p-0">Export as JSON</Link>
                                 </Section>
                             </Section>
                         </Section>
