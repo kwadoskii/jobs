@@ -1,44 +1,10 @@
 import React, { Component } from 'react';
-// import { Link } from 'react-router-dom';
-import Navbar from '../container/Navbar';
-import Section from '../container/Section';
-import landingbg from '../images/landing-background.png';
-import landingpr from '../images/landing-primary.png';
-// import Button from '../container/Button';
-import SiginInput from '../container/SiginInput'
-import SignupInput from '../container/SignupInput'
-import ForgotPwInput from '../container/ForgotPwInput'
+import Navbar               from '../components/Navbar';
+import Section              from '../components/Section';
+import landingbg            from '../images/landing-background.png';
+import landingpr            from '../images/landing-primary.png';
+import FormType             from '../components/FormType';
 
-function FormType(props){
-    if(props.type === 0){
-        return (
-            <SiginInput 
-                handleSignUp = { props.handleSignUp } 
-                handleForgotPW = { props.handleForgotPW } 
-                />
-        );
-    }
-    if(props.type === 2){
-        return (
-            <ForgotPwInput
-                handleSignIn = { props.handleSignIn }
-                handleSignUp = { props.handleSignUp }
-                />
-        );
-    }
-    if(props.type === 1){
-        return (
-            <SignupInput
-                handleSignIn = { props.handleSignIn }
-                handleForgotPW = { props.handleForgotPW }
-            />
-        );
-    }
-    else 
-    return (
-        <h2>None</h2>
-    );
-}
 
 class Signin extends Component {
     constructor(props){
@@ -69,8 +35,6 @@ class Signin extends Component {
     forgotPW() {
         this.setState({ loginType: 2});
     }
-
-    
 
     render() {
         let style = {
@@ -116,10 +80,10 @@ class Signin extends Component {
 
                                 <Section class={"form mt-5 pr-3 pl-3"}>
                                     <FormType 
-                                    handleSignUp = { this.signup }
-                                    handleForgotPW = { this.forgotPW }
-                                    handleSignIn = { this.signin }
-                                    type = { this.state.loginType } />
+                                        handleSignUp =      { this.signup }
+                                        handleForgotPW =    { this.forgotPW }
+                                        handleSignIn =      { this.signin }
+                                        type =              { this.state.loginType } />
                                 </Section>
                             </Section>
                         </Section>

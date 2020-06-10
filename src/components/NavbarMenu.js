@@ -6,23 +6,35 @@ import avatar from '../images/avatar.png';
 import { Link } from 'react-router-dom';
 
 class NavbarMenu extends Component {
-    state = {
-        user: {
-            name: {
-                firstname: '',
-                lastname: ''
-            },
-            email: ''
+    constructor(props) {
+        super(props)
+        
+        this.state = {
+            user: {
+                name: {
+                    firstname: '',
+                    lastname: ''
+                },
+                email: ''
+            }
         }
+
+        this.handleSignOut = this.handleSignOut.bind(this);
+    }
+    
+
+    handleSignOut(){
+        localStorage.removeItem('auth-token');
+        // this.props.history.push('/signin');
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/users/'+this.props.userId)
         // axios.get('http://localhost:5000/users/5ebdd605edd5322c442dc116')
-            .then(user => {
-                // console.log(user.data)
-                this.setState({ user: user.data })
-            }).catch(err => console.log(err));
+        // axios.get('http://localhost:5000/users/'+this.props.userId)
+        //     .then(user => {
+        //         // console.log(user.data)
+        //         this.setState({ user: user.data })
+        //     }).catch(err => console.log(err));
     }
 
     render() {
@@ -49,7 +61,7 @@ class NavbarMenu extends Component {
                             <Link className="dropdown-item" to={ "/setting"}>Settings</Link>
                             {/* <Link className="dropdown-item" to={ "/setting/" + this.state.user._id }>Settings</Link> */}
                             <Section class="dropdown-divider" />
-                            <Link className="dropdown-item" to="/signin">Logout</Link>
+                            <Link className="dropdown-item" to="/signin" onClick={this.handleSignOut}>Sign out</Link>
                         </Section>
                     </Section>
                 </Section>

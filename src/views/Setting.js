@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../container/Navbar'
-import NavbarMenu from '../container/NavbarMenu'
-import Section from '../container/Section'
-import Modal from '../container/Modal'
+import Navbar from '../components/Navbar'
+import NavbarMenu from '../components/NavbarMenu'
+import Section from '../components/Section'
+import Modal from '../components/Modal'
 import lock from '../images/lock.png'
 import globe from '../images/globe.png'
 import upload from '../images/upload.png'

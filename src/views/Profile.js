@@ -1,13 +1,13 @@
-import React, { Component, useReducer } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import NavBar from '../container/Navbar';
-import NavBarMenu from '../container/NavbarMenu';
-import Section from '../container/Section';
+import NavBar from '../components/Navbar';
+import NavBarMenu from '../components/NavbarMenu';
+import Section from '../components/Section';
 import avatar from '../images/avatar.png';
-import Modal from '../container/Modal';
+import Modal from '../components/Modal';
 import $ from 'jquery';
-import Input from '../container/Input';
+// import Input from '../components/Input';
 
 
 var id = '';
@@ -78,10 +78,10 @@ class Profile extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/users/5ec6c2604122631efc492d72')
-            .then(user => {
-                this.setState({ user: user.data })
-            }).catch(err => console.log(err));
+        // axios.get('http://localhost:5000/users/5ee039431d22610ffcee23db')
+        //     .then(user => {
+        //         this.setState({ user: user.data })
+        //     }).catch(err => console.log(err));
     }
 
     ExperienceList() {

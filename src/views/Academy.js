@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import Navbar from '../container/Navbar'
-import NavbarMenu from '../container/NavbarMenu'
-import Section from '../container/Section'
-import Banner from '../container/Banner'
-import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
+import Navbar from '../components/Navbar'
+import NavbarMenu from '../components/NavbarMenu'
+import Section from '../components/Section'
+import Banner from '../components/Banner'
+// import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
 // import bgimage2 from '../images/graduating-soon-get-ready-for-working-world.jpg'
 
 

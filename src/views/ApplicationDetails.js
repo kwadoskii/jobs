@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
-import Navbar from '../container/Navbar'
-import NavbarMenu from '../container/NavbarMenu'
-import Section from '../container/Section'
+import Navbar from '../components/Navbar'
+import NavbarMenu from '../components/NavbarMenu'
+import Section from '../components/Section'
 import avatar from '../images/avatar.png';
 import logo from '../images/hotel-direct.png';
 import thumb from '../images/thumb.png';

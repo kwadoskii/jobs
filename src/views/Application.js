@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from '../container/Navbar';
-import NavBarMenu from '../container/NavbarMenu';
-import Section from '../container/Section';
+import NavBar from '../components/Navbar';
+import NavBarMenu from '../components/NavbarMenu';
+import Section from '../components/Section';
 import avatar from '../images/hotel-direct.png';
 import avatar2 from '../images/wooden-tree.png';
-import Announcement from '../container/Announcement'
+import Announcement from '../components/Announcement'
 
 class Application extends Component {
     render() {
