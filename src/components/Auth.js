@@ -1,23 +1,54 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { getJwt } from '../helper/jwt';
+import Axios from 'axios';
 
 class Auth extends Component {
-    componentDidMount(){
-        let token = localStorage.getItem('auth-token');
-        if(!token) 
+    constructor(props) {
+        super(props);
+            
+        this.state = {
+            auth: undefined
+        };
+    }
+    
+
+    componentDidMount() {
+        const jwt = getJwt();
+        if (!jwt)
             return this.props.history.push('/');
-        else
-            this.setState({
-                loading: false
-            });
+        if(jwt)
+            console.log(jwt)
+            // console.log(jwt)
+            Axios.get('http://localhost:5000/auth', { headers: { 'auth-token': jwt } })
+                .then(({ data }) => {
+                    console.log(data)
+                    if (data.status === 'success')
+                        this.setState({ auth: data.data.user });
+                    if (data.status === 'error')
+                        this.setState({ auth: undefined });
+                }).catch(err => {
+                    localStorage.removeItem('auth-token');
+                    this.props.history.push('/');
+                })
+
     }
 
     render() {
+        if (this.state.auth === undefined) {
+            return (
+                <div>
+                    
+                </div>
+            );
+        }
+        
         return (
-            <div>
-                {this.props.children}
-            </div>
-        );
+                <div>
+                    {this.props.children}
+                </div>
+            );      
+            
     }
 }
 

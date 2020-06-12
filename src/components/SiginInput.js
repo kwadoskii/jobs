@@ -12,7 +12,8 @@ class SiginInput extends Component {
             email: '',
             password: '',
             error: '',
-            redirect: false
+            redirect: false,
+            authUser: ''
         }
 
         this.handleOnchange = this.handleOnchange.bind(this);
@@ -34,7 +35,6 @@ class SiginInput extends Component {
             .then(({ data }) => {
                 if(data.data.token){
                     localStorage.setItem('auth-token', data.data.token);
-                    console.log(data);
                     this.setState({ redirect: true });
                 }
                 if(data.status === 'error'){
@@ -45,7 +45,9 @@ class SiginInput extends Component {
 
     render() {
         if(this.state.redirect){
-            return <Redirect to='/profile' />
+            return <Redirect to={{
+                pathname: '/profile',
+                 }}/>
         }
         
         return (

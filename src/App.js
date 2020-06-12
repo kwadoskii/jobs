@@ -19,15 +19,15 @@ function App() {
 				<Switch>
 					<Route path='/' exact component={Signin} />
 					<Route path='/signin' exact component={Signin} />
-					<Route path='/academy' exact component={Academy} />
-					<Route path='/academy/:id' component={Post} />
 					
 					{/* protected routes */}
 					<Auth>
 						<Route path='/profile' exact component={Profile} />
-						<Route path='/setting' component={Setting} />
+						<Route path='/academy' exact component={Academy} />
 						<Route path='/applications' exact component={Application} />
 						<Route path='/applications/:id' component={ApplicationDetails} />
+						<Route path='/academy/:id' component={Post} />
+						<Route path='/setting' component={Setting} />
 					</Auth>
 				</Switch>
 			</div>

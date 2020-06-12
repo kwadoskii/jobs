@@ -4,19 +4,19 @@ import Section from './Section';
 import Button from './Button';
 import avatar from '../images/avatar.png';
 import { Link } from 'react-router-dom';
+import { getJwt } from '../helper/jwt';
+
 
 class NavbarMenu extends Component {
     constructor(props) {
         super(props)
         
         this.state = {
-            user: {
-                name: {
-                    firstname: '',
-                    lastname: ''
-                },
-                email: ''
-            }
+            name: {
+                firstname: '',
+                lastname: ''
+            },
+            email: ''
         }
 
         this.handleSignOut = this.handleSignOut.bind(this);
@@ -29,12 +29,16 @@ class NavbarMenu extends Component {
     }
 
     componentDidMount(){
-        // axios.get('http://localhost:5000/users/5ebdd605edd5322c442dc116')
-        // axios.get('http://localhost:5000/users/'+this.props.userId)
-        //     .then(user => {
-        //         // console.log(user.data)
-        //         this.setState({ user: user.data })
-        //     }).catch(err => console.log(err));
+        axios.get('http://localhost:5000/profile', {
+            headers: {
+                'auth-token': getJwt()
+
+            }
+        })
+        .then(response => {
+            const { name, user } = response.data.data;
+            this.setState({ name: name, email: user.email })
+        }).catch(err => console.log(err));
     }
 
     render() {
@@ -48,9 +52,9 @@ class NavbarMenu extends Component {
                     </button>
                     <Section class={"dropdown-menu dropdown-menu-right"} stylex={{'fontSize': '1.1rem', 'minWidth': '21rem'}}>
                         <Section class={"pt-2 pl-4 pr-4 pb-2"}>
-                            <h5>{this.state.user.name.firstname + " " + this.state.user.name.lastname}</h5>
-                            <p>{this.state.user.email}</p>
-                            <Link to={ "/profile/"}>
+                            <h5>{this.state.name.firstname + " " + this.state.name.lastname}</h5>
+                            <p>{this.state.email}</p>
+                            <Link to="/profile">
                                 <Button class="col-12 btn btn-primary rounded-pill" name={'My SmartProfile'} />
                             </Link>
                             <Section style={{'borderTop': '1px solid #e9ecef', 'height': 0, 'marginTop': '0.7rem', 'overflow': 'hidden'}} />
