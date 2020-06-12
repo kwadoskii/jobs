@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-import Navbar from '../components/Navbar'
-import NavbarMenu from '../components/NavbarMenu'
-import Section from '../components/Section'
-import Banner from '../components/Banner'
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Navbar from '../components/Navbar';
+import NavbarMenu from '../components/NavbarMenu';
+import Section from '../components/Section';
+import Banner from '../components/Banner';
+import { getJwt } from '../helper/jwt';
+import Tag from '../components/Tag';
 // import bgImage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
 
 class Post extends Component {
@@ -17,7 +19,8 @@ class Post extends Component {
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/posts/' + this.props.match.params.id, )
+        const jwt = getJwt();
+        axios.get('http://localhost:5000/posts/' + this.props.match.params.id, { headers: { 'auth-token': jwt } })
             .then(post => {
                 console.log(post.data);
                 console.log(this.props.match.params.id);
@@ -27,8 +30,14 @@ class Post extends Component {
     }
 
     render() {
-        const TagsL = this.state.post.tags ? this.state.post.tags.map((tag, i) => <span className="muted small hashtag pl-3 pr-3 pt-1 pb-1 m-1" key={i}>{tag}</span>) : '';
-        
+        const TagsL = () => {
+            if(this.state.post.tags) {
+                return this.state.post.tags.map((tag, i) => <Tag tag={tag} key={i} /> );
+            } else {
+                return '';
+            }
+        }
+
         return (
             <div>
                 <Navbar class={"navbar navbar-dark fixed-top pt-2 pb-2 pl-4 pr-4"} stylex={{ backgroundColor: 'rgba(9,93,207, 9)' }} imgSize={"35px"} url='/academy'>
@@ -46,7 +55,7 @@ class Post extends Component {
                             <Section class="bg-white article radius-sm">
                                 <h3>{this.state.post.title}</h3>
                                 <Section class="hashtagholder">
-                                    {TagsL}
+                                    {TagsL()}
                                 </Section>
                             </Section>
 
@@ -63,7 +72,6 @@ class Post extends Component {
                             </Section>
                         </Section>
                     </Section>
-
                 </Section>
             </div>
         );

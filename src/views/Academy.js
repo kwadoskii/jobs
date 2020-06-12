@@ -1,45 +1,14 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-import Navbar from '../components/Navbar'
-import NavbarMenu from '../components/NavbarMenu'
-import Section from '../components/Section'
-import Banner from '../components/Banner'
-// import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
-// import bgimage2 from '../images/graduating-soon-get-ready-for-working-world.jpg'
+import React, { Component }     from 'react';
+import { Link }                 from 'react-router-dom';
+import axios                    from 'axios';
+import Navbar                   from '../components/Navbar';
+import NavbarMenu               from '../components/NavbarMenu';
+import Section                  from '../components/Section';
+import Banner                   from '../components/Banner';
+import Article                  from '../components/Article';
+import { getJwt }               from '../helper/jwt';
+import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg' //leave for now to allow image render well
 
-
-class Article extends Component {
-
-    TagsL() {
-        return this.props.tags.map((tag, i) => <Tags tag={tag} key={i}/>);
-    }
-  
-    render() {
-        const shorten = this.props.details ? this.props.details.substring(0, 275) + '...' : '';
-        return (
-            <div>
-                <Section class={"row radiusx bg-white p-4 shadow-sm mt-2"}>
-                    <Section class={"col-md-12 p-4 bg-image"} stylex={{ 'backgroundImage': `url(${this.props.imgurl})` }}></Section>
-                    <Section class={"mt-3"}>
-                        <Link to={"/academy/" + this.props.id} className="text-reset"><h3>{this.props.title}</h3></Link>
-                        <p className="text-muted font1-1">{shorten}</p>
-
-                        <Section class={"hashtagholder pb-4"}>
-                            {this.TagsL()}
-                        </Section>
-                    </Section>
-                </Section>
-            </div>
-        );
-    }
-}
-
-const Tags = (props) => {
-    return (
-        <span className="muted small hashtag pl-3 pr-3 pt-1 pb-1 m-1">{props.tag}</span>
-    )
-}
 
 class Academy extends Component {
     constructor(props){
@@ -51,7 +20,8 @@ class Academy extends Component {
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/posts')
+        const jwt = getJwt();
+        axios.get('http://localhost:5000/posts', { headers: { 'auth-token': jwt } })
             .then((res) => {
                 this.setState({posts: res.data});
                 console.log(res.data)

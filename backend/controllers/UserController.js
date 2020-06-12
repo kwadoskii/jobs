@@ -20,14 +20,8 @@ exports.user = function (req, res) {
 }
 
 exports.userCreate = function (req, res) {
-    const user = new User();
-
-    user.name = req.body.name;
-    user.email = req.body.email;
-    user.phone = req.body.phone;
-    user.address = req.body.address;
-    user.experience = req.body.experience;
-    user.education = req.body.education;
+    const { name, email, phone, address, experience, education } = req.body;
+    const user = new User({ name, email, phone, address, experience, education });
 
     user.save()
         .then(user => {
@@ -72,7 +66,7 @@ exports.userSignIn = function (req, res) {
                     id: user._id,
                     email: user.email
                 },
-                exp: Math.floor(Date.now() / 1000) + (60 * 60), //expires in 1h
+                exp: Math.floor(Date.now() / 1000) + (10 * 60 * 60), //expires in 1h
             }, process.env.TOKEN_SECRET);
             res.status(200).send({
                 status: 'success',
