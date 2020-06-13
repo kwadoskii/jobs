@@ -39,7 +39,10 @@ exports.addProfile = function(req, res){
 }
 
 exports.editProfile = function (req, res){
-    Profile.findOneAndUpdate(req.params.id, req.body, { new: true }).populate('user', 'email')
+
+    // Profile.find({ _id: req.params.id }).then(profile => res.send(profile)).catch(err => res.send(err));
+    
+    Profile.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true }).populate('user', 'email')
         .then(profile => {
             res.status(200).send({
                 status: 'success',

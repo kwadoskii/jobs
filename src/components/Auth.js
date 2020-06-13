@@ -18,11 +18,9 @@ class Auth extends Component {
         if (!jwt)
             return this.props.history.push('/');
         if(jwt)
-            console.log(jwt)
             // console.log(jwt)
             Axios.get('http://localhost:5000/auth', { headers: { 'auth-token': jwt } })
                 .then(({ data }) => {
-                    console.log(data)
                     if (data.status === 'success')
                         this.setState({ auth: data.data.user });
                     if (data.status === 'error')

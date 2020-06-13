@@ -1,50 +1,13 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Link} from 'react-router-dom';
-import NavBar from '../components/Navbar';
-import NavBarMenu from '../components/NavbarMenu';
-import Section from '../components/Section';
-import avatar from '../images/avatar.png';
-import Modal from '../components/Modal';
-import $ from 'jquery';
-import { getJwt } from '../helper/jwt';
-
-var id = '';
-
-const Experience = (props) => {
-    function getId(e){
-        if(e){
-            console.log(e.target.dataset['id']);
-            id = e.target.dataset['id'];
-        }
-    }
-
-    return (
-        <div>
-            <Section class={"dropdown-dividerx mtx"}></Section>
-            <Section class={"row"}>
-                <Section class={"col-md-2"}>
-                    <p className="p-0">{props.from.substring(0, 7)} - {props.to.substring(0, 7)}</p>
-                </Section>
-
-                <Section class={"col-md-7"}>
-                    <p className="font-weight-bold">{props.title}</p>
-                    <p className="small">{props.company}</p>
-                    <p className="small">{props.location}</p>
-                    <p className={props.small ? 'small' : ""}> {props.description}
-                    </p>
-                </Section>
-
-                <Section class={"col-md-3"}>
-                    <span className="float-right">
-                        <Link to='/profile' data-id={props._id} data-toggle="modal" data-target={props.dataTargetEdit} >Edit</Link> &nbsp;
-                        <Link to='/profile' data-id={props._id} data-toggle="modal" data-target={props.dataTargetDel} onClick={getId}>Delete</Link>
-                    </span>
-                </Section>
-            </Section>
-        </div>
-    );
-}
+import React, { Component }     from 'react';
+import axios                    from 'axios';
+import NavBar                   from '../components/Navbar';
+import NavBarMenu               from '../components/NavbarMenu';
+import Section                  from '../components/Section';
+import avatar                   from '../images/avatar.png';
+import Modal                    from '../components/Modal';
+import Experience               from '../components/Experience';
+import $                        from 'jquery';
+import { getJwt }               from '../helper/jwt';
 
 
 class Profile extends Component {
@@ -66,7 +29,7 @@ class Profile extends Component {
                 education: { school: [] }
             },
             email: '',
-            modalInput: {
+            modalAddExpForm: {
                 title: '',
                 company: '',
                 location: '',
@@ -74,17 +37,30 @@ class Profile extends Component {
                 from: '',
                 to: '',
                 workhere: false
-            }
+            },
+            modalEditExpForm: {
+                title: '',
+                company: '',
+                location: '',
+                description: '',
+                from: '',
+                to: '',
+                workhere: false
+            },
+            strength: 55,
+            dataid: ''
         }
 
         this.delExperience = this.delExperience.bind(this);
         this.delEducation = this.delEducation.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleChange2 = this.handleChange2.bind(this);
         this.addExperience = this.addExperience.bind(this);
+        this.editExperience = this.editExperience.bind(this);
+        this.getId = this.getId.bind(this);
     }
 
-    async componentWillMount() {
-
+    async componentDidMount() {
         await axios.get('http://localhost:5000/profile', {
             headers: {
                 'auth-token': getJwt()
@@ -96,22 +72,24 @@ class Profile extends Component {
     }
 
     ExperienceList() {
-        return this.state.user.experience.map((experience) => {
-            if (experience.to == null) {
-                experience.to = 'Current';
+        return this.state.user.experience.map((experience, i) => {
+            let to = experience.to;
+            if (to == null) {
+                to = 'Current';
             }
             return <Experience
-                title={experience.title}
-                company={experience.company}
-                description={experience.description}
-                location={experience.location}
-                from={experience.from}
-                to={experience.to}
-                small={false}
-                dataTargetDel='#delExperience'
-                dataTargetEdit='#editExperience'
-                key={experience._id}
-                _id={experience._id} />
+                        title={experience.title}
+                        company={experience.company}
+                        description={experience.description}
+                        location={experience.location}
+                        from={experience.from}
+                        to={to}
+                        small={false}
+                        dataTargetDel='#delExperience'
+                        dataTargetEdit='#editExperience'
+                        getId = {this.getId}
+                        key={i}
+                        _id={experience._id} />
         });
     }
 
@@ -131,7 +109,64 @@ class Profile extends Component {
         );
     }
 
+    getId(e){
+        // let id = e.target.parent.find.dataset['id'];
+        let id = e.target.parentElement.dataset['id'];
+
+        this.setState({dataid: id});
+
+        if(e.target.name === 'edit'){
+            const exp = this.state.user.experience.filter(e => {
+                return e._id === id;
+            });
+
+            if(exp[0].to === null){
+                exp[0].workhere = true;
+                exp[0].to = exp[0].from;
+            }
+            else{
+                exp[0].workhere = false;
+            }
+
+            this.setState({
+                modalEditExpForm: {
+                    title: exp[0].title,
+                    company: exp[0].company,
+                    location: exp[0].location,
+                    description: exp[0].description,
+                    from: exp[0].from.substring(0, 10),
+                    to: exp[0].to.substring(0, 10),
+                    workhere: exp[0].workhere
+                }
+            });
+        }
+    }
+
+    clearModal(){
+        this.setState({
+            modalAddExpForm: {
+                title: '',
+                company: '',
+                location: '',
+                description: '',
+                from: '',
+                to: '',
+                workhere: false
+            },
+            modalEditExpForm: {
+                title: '',
+                company: '',
+                location: '',
+                description: '',
+                from: '',
+                to: '',
+                workhere: false
+            }
+        });
+    }    
+
     async delExperience(){
+        let id = this.state.dataid;
         let user = this.state.user;
         if(user){
             user.experience = user.experience.filter(e => {
@@ -146,15 +181,15 @@ class Profile extends Component {
                 }
             })
             .then(async res => {
-                await this.setState({ user: res.data.data });
+                await this.setState({ user: res.data.data, dataid: ''});
                 $('#delExperience').modal('hide');
             })
             .catch(err => console.log(err));
-            console.log(this.state.user)
         }        
     }
 
     delEducation(){
+        let id;
         let user = this.state.user;
         if(user){
             user.education.school = user.education.school.filter(e => {
@@ -169,41 +204,81 @@ class Profile extends Component {
 
     addExperience(e){
         e.preventDefault();
-            this.state.user.experience.push(this.state.modalInput);
-            const { experience } = this.state.user;
+        this.state.user.experience.push(this.state.modalAddExpForm);
+        const { experience } = this.state.user;
 
-            axios.patch('http://localhost:5000/profile/' + this.state.user._id, { experience }, {
-                headers: {
-                    'auth-token': getJwt()
-                }
+        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { experience }, {
+            headers: {
+                'auth-token': getJwt()
+            }
+        })
+        .then(res => {
+            this.setState({ user: res.data.data });
+            $('#newExperience').modal('hide');
+            this.clearModal();
+        })
+        .catch(err => console.log(err));        
+    }
+
+    editExperience(){
+        const { modalEditExpForm, user } = this.state;
+
+        //get the index of the experience that was modified
+        const indx = user.experience.findIndex(e => e._id = this.state.dataid);
+        user.experience[indx] = modalEditExpForm;
+        console.log(indx)
+        // $('#editExperience').modal('hide');
+
+        axios.patch('http://localhost:5000/profile/' + this.state.user._id, {experience: user.experience }, { 
+            headers: { 'auth-token': getJwt() } })
+            .then(({ data }) => {
+                $('#editExperience').modal('hide');
+                this.setState({dataid: '', experience: data.data.experience });
+                this.clearModal();
             })
-            .then(res => {
-                this.setState({ user: res.data.data });
-                $('#newExperience').modal('hide');
-            })
-            .catch(err => console.log(err));        
+            .catch(err => console.log(err));
     }
 
     handleChange(e){
         const { value, name } = e.target;
         if(e.target.type === 'checkbox'){
             this.setState(prevState => ({
-                modalInput: {
-                    ...prevState.modalInput,
-                    [name]: !this.state.modalInput.workhere
+                modalAddExpForm: {
+                    ...prevState.modalAddExpForm,
+                    [name]: !this.state.modalAddExpForm.workhere,
                 }
             }));
+            if (this.state.modalAddExpForm.workhere) { this.setState({ modalAddExpForm: { to: null } }) }
         }
         else{
             this.setState(prevState => ({
-                modalInput: {
-                    ...prevState.modalInput,
+                modalAddExpForm: {
+                    ...prevState.modalAddExpForm,
+                    [name]: value
+                }
+            }));
+        }        
+    }
+
+    handleChange2(e){
+        const { value, name } = e.target;
+        if(e.target.type === 'checkbox'){
+            this.setState(prevState => ({
+                modalEditExpForm: {
+                    ...prevState.modalEditExpForm,
+                    [name]: !this.state.modalEditExpForm.workhere
+                }
+            }));
+            if (this.state.modalEditExpForm.workhere) { this.setState({ modalEditExpForm: { to: null } }) }
+        }
+        else{
+            this.setState(prevState => ({
+                modalEditExpForm: {
+                    ...prevState.modalEditExpForm,
                     [name]: value
                 }
             }));
         }
-        
-        console.log(this.state.modalInput.workhere)
     }
 
     render() {
@@ -235,8 +310,8 @@ class Profile extends Component {
                         <Section class="row mt-4 p-4 pb-5 bg-white radiusx shadow-sm">
                             <p className="font-weight-bold">Profile completeness</p>
                             <p className="text-muted">Boost the attention you receive from recruiters! Strengthen your profile by adding contact info, social links, and details about your experience and education.</p>
-                            <Section class="scrolbar radiusx">
-                                <p className="float-rightx font-weight-bold">100%</p>
+                            <Section class="scrolbar radiusx" stylex={{ width: `${this.state.strength}%` }}>
+                                <p className="float-rightx font-weight-bold">{this.state.strength}%</p>
                             </Section>
                         </Section>
 
@@ -274,44 +349,44 @@ class Profile extends Component {
                         <Modal id='newExperience' title={"Add Experience"} handleClick={this.addExperience} btnname="Save">
                             <Section class={"form-row"}>
                                 <Section class={"col-md-6"}>
-                                    <label htmlFor="title" className="small">Title</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" name="title" value={this.state.modalInput.title} onChange={this.handleChange}/>
+                                    <label htmlFor="ntitle" className="small">Title</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ntitle" name="title" value={this.state.modalAddExpForm.title} onChange={this.handleChange}/>
                                 </Section>
                                 <Section class="col-md-6">
-                                    <label htmlFor="company" className="small">Company</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" name="company" value={this.state.modalInput.company} onChange={this.handleChange}/>
+                                    <label htmlFor="ncompany" className="small">Company</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ncompany" name="company" value={this.state.modalAddExpForm.company} onChange={this.handleChange}/>
                                 </Section>
                             </Section>
 
                             <Section class="form-row mt-2">
                                 <Section class="col-md-12">
-                                    <label htmlFor="location" className="small">Location</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" name="location" value={this.state.modalInput.location} onChange={this.handleChange}/>
+                                    <label htmlFor="nlocation" className="small">Location</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="nlocation" name="location" value={this.state.modalAddExpForm.location} onChange={this.handleChange}/>
                                 </Section>
                             </Section>
 
                             <Section class={"form-row mt-2"}>
                                 <Section class={"col-md-12"}>
-                                    <label htmlFor="description" className="small">Description</label>
-                                    <textarea rows="3" className="form-control" id="description" name="description" value={this.state.modalInput.description} onChange={this.handleChange}></textarea>
+                                    <label htmlFor="ndescription" className="small">Description</label>
+                                    <textarea rows="3" className="form-control" id="ndescription" name="description" value={this.state.modalAddExpForm.description} onChange={this.handleChange}></textarea>
                                 </Section>
                             </Section>
 
                             <Section class={"form-row mt-2"}>
                                 <Section class={"col-md-6"}>
-                                    <label htmlFor="from" className="small">From</label><span className="redx"> *</span>
-                                    <input type="date" name="from" className="form-control" value={this.state.modalInput.from} onChange={this.handleChange}/>
+                                    <label htmlFor="nfrom" className="small">From</label><span className="redx"> *</span>
+                                    <input type="date" id="nfrom" name="from" className="form-control" value={this.state.modalAddExpForm.from} onChange={this.handleChange}/>
                                 </Section>
 
-                                <Section class={"col-md-6"}>
-                                    <label htmlFor="to" className="small">To</label><span className="redx"> *</span>
-                                    <input type="date" name="to" id="" className="form-control" value={this.state.modalInput.to} onChange={this.handleChange}/>
+                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                    <label htmlFor="nto" className="small">To</label><span className="redx"> *</span>
+                                    <input type="date" name="to" id="nto" className="form-control" value={this.state.modalAddExpForm.to} onChange={this.handleChange}/>
                                 </Section>
                             </Section>
 
                             <Section class={"form-row mt-2"}>
                                 <Section class={"col-md-12"}>
-                                    <input type="checkbox" name="workhere" id='idi' checked={this.state.modalInput.workhere} onChange={this.handleChange} />
+                                    <input type="checkbox" name="workhere" className='mr-2' checked={this.state.modalAddExpForm.workhere} onChange={this.handleChange} />
                                     <span>I currently work here</span>
                                 </Section>
                             </Section>
@@ -320,44 +395,44 @@ class Profile extends Component {
                         <Modal id='editExperience' title={"Edit Experience"} handleClick={this.editExperience} btnname="Save Changes">
                             <Section class={"form-row"}>
                                 <Section class={"col-md-6"}>
-                                    <label htmlFor="title" className="small">Title</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" name="title" value={this.state.modalInput.title} onChange={this.handleChange}/>
+                                    <label htmlFor="etitle" className="small">Title</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="etitle" name="title" value={this.state.modalEditExpForm.title} onChange={this.handleChange2}/>
                                 </Section>
                                 <Section class="col-md-6">
-                                    <label htmlFor="company" className="small">Company</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" name="company" value={this.state.modalInput.company} onChange={this.handleChange}/>
+                                    <label htmlFor="ecompany" className="small">Company</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ecompany" name="company" value={this.state.modalEditExpForm.company} onChange={this.handleChange2}/>
                                 </Section>
                             </Section>
 
                             <Section class="form-row mt-2">
                                 <Section class="col-md-12">
-                                    <label htmlFor="location" className="small">Location</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" name="location" value={this.state.modalInput.location} onChange={this.handleChange}/>
+                                    <label htmlFor="elocation" className="small">Location</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="elocation" name="location" value={this.state.modalEditExpForm.location} onChange={this.handleChange2}/>
                                 </Section>
                             </Section>
 
                             <Section class={"form-row mt-2"}>
                                 <Section class={"col-md-12"}>
-                                    <label htmlFor="description" className="small">Description</label>
-                                    <textarea rows="3" className="form-control" id="description" name="description" value={this.state.modalInput.description} onChange={this.handleChange}></textarea>
+                                    <label htmlFor="edescription" className="small">Description</label>
+                                    <textarea rows="3" className="form-control" id="edescription" name="description" value={this.state.modalEditExpForm.description} onChange={this.handleChange2}></textarea>
                                 </Section>
                             </Section>
 
                             <Section class={"form-row mt-2"}>
                                 <Section class={"col-md-6"}>
-                                    <label htmlFor="from" className="small">From</label><span className="redx"> *</span>
-                                    <input type="date" name="from" className="form-control" value={this.state.modalInput.from} onChange={this.handleChange}/>
+                                    <label htmlFor="efrom" className="small">From</label><span className="redx"> *</span>
+                                    <input type="date" id="efrom" name="from" className="form-control" value={this.state.modalEditExpForm.from} onChange={this.handleChange2}/>
                                 </Section>
 
-                                <Section class={"col-md-6"}>
-                                    <label htmlFor="to" className="small">To</label><span className="redx"> *</span>
-                                    <input type="date" name="to" id="" className="form-control" value={this.state.modalInput.to} onChange={this.handleChange}/>
+                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalEditExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                    <label htmlFor="eto" className="small">To</label><span className="redx"> *</span>
+                                    <input type="date" id="eto" name="to" className="form-control" value={this.state.modalEditExpForm.to} onChange={this.handleChange2}/>
                                 </Section>
                             </Section>
 
                             <Section class={"form-row mt-2"}>
                                 <Section class={"col-md-12"}>
-                                    <input type="checkbox" name="workhere" id='idi' checked={this.state.modalInput.workhere} onChange={this.handleChange} />
+                                    <input type="checkbox" name="workhere" className="mr-2" checked={this.state.modalEditExpForm.workhere} onChange={this.handleChange2} />
                                     <span>I currently work here</span>
                                 </Section>
                             </Section>
