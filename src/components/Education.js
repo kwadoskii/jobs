@@ -1,9 +1,8 @@
-import React from 'react';
-import Section from './Section';
-import { Link } from 'react-router-dom';
+import React        from 'react';
+import Section      from './Section';
+import { Link }     from 'react-router-dom';
 
-
-const Experience = (props) => {
+const School = (props) => {
     return (
         <div>
             <Section class={"dropdown-dividerx mtx"}></Section>
@@ -22,8 +21,8 @@ const Experience = (props) => {
 
                 <Section class={"col-md-3"}>
                     <span className="float-right" data-id={props._id}>
-                        <Link to='' name='edit' data-toggle="modal" data-target={props.dataTargetEdit} onClick={props.getId} >Edit</Link> &nbsp;
-                        <Link to='' name='del' data-toggle="modal" data-target={props.dataTargetDel} onClick={props.getId}>Delete</Link>
+                        <Link to='' name='eduedit' data-toggle="modal" data-target={props.dataTargetEdit} onClick={props.getId} >Edit</Link> &nbsp;
+                        <Link to='' name ='del' data-toggle="modal" data-target={props.dataTargetDel} onClick={props.getId}>Delete</Link>
                     </span>
                 </Section>
             </Section>
@@ -31,4 +30,4 @@ const Experience = (props) => {
     );
 }
 
-export default Experience;
+export default School;

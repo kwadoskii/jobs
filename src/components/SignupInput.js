@@ -3,6 +3,7 @@ import { Redirect }         from 'react-router-dom';
 import Section              from './Section';
 import Button               from './Button';
 import Axios                from 'axios';
+import { getJwt} from '../helper/jwt';
 
 
 class SignupInput extends Component {
@@ -41,6 +42,9 @@ class SignupInput extends Component {
                     }
                     else{
                         //if signup is successful sign the user in
+                        // Axios.get('http://localhost:5000/profile', { headers: { 'auth-token': getJwt() } })
+                        //     .then(res => console.log(res))
+                        //     .catch(err => console.log(err));
                         Axios.post('http://localhost:5000/signin', { email, password })
                             .then(({ data }) => {
                                 localStorage.setItem('auth-token', data.data.token);

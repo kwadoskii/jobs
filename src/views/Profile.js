@@ -8,6 +8,7 @@ import Modal                    from '../components/Modal';
 import Experience               from '../components/Experience';
 import $                        from 'jquery';
 import { getJwt }               from '../helper/jwt';
+import Education                from '../components/Education';
 
 
 class Profile extends Component {
@@ -45,19 +46,35 @@ class Profile extends Component {
                 description: '',
                 from: '',
                 to: '',
-                workhere: false
+                workhere: ''
             },
-            strength: 55,
-            dataid: ''
+            strength: 100,
+            dataid: '',
+            modalAddEduForm: {
+                name: '',
+                course: '',
+                degree: '',
+                from: '',
+                to: ''
+            },
+            modalEditEduForm: {
+                name: '',
+                course: '',
+                degree: '',
+                from: '',
+                to: ''
+            }
         }
 
-        this.delExperience = this.delExperience.bind(this);
-        this.delEducation = this.delEducation.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleChange2 = this.handleChange2.bind(this);
         this.addExperience = this.addExperience.bind(this);
         this.editExperience = this.editExperience.bind(this);
+        this.delExperience = this.delExperience.bind(this);
+        this.addEducation = this.addEducation.bind(this);
+        this.editEducation = this.editEducation.bind(this);
+        this.delEducation = this.delEducation.bind(this);
         this.getId = this.getId.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleChange2 = this.handleChange2.bind(this);
     }
 
     async componentDidMount() {
@@ -66,17 +83,15 @@ class Profile extends Component {
                 'auth-token': getJwt()
             }
         })
-        .then(response => {
-            this.setState({ user: response.data.data, email: response.data.data.user.email })
+        .then(({data}) => {
+            this.setState( prevState => ({ ...prevState.user, user: data.data, email: data.data.user.email }));
         }).catch(err => console.log(err));
     }
 
     ExperienceList() {
-        return this.state.user.experience.map((experience, i) => {
+        return this.state.user.experience.map((experience) => {
             let to = experience.to;
-            if (to == null) {
-                to = 'Current';
-            }
+            to = (to === null || to === '') ? 'Present' : '';
             return <Experience
                         title={experience.title}
                         company={experience.company}
@@ -88,57 +103,75 @@ class Profile extends Component {
                         dataTargetDel='#delExperience'
                         dataTargetEdit='#editExperience'
                         getId = {this.getId}
-                        key={i}
+                        key={experience._id}
                         _id={experience._id} />
         });
     }
 
     EducationList() {
-        return this.state.user.education.school.map((school, i) => {
-                return <Experience
-                    title={school.name}
-                    company={school.course}
-                    description={school.degree}
-                    from={school.from}
-                    to={school.to}
-                    small={true}
-                    dataTarget='#delEducation'
-                    key={school._id}
-                    _id={school._id} />
+        return this.state.user.education.school.map((school) => {
+            return <Education
+                title={school.name}
+                company={school.course}
+                description={school.degree}
+                from={school.from}
+                to={school.to}
+                small={true}
+                dataTargetDel='#delEducation'
+                dataTargetEdit='#editEducation'
+                getId = {this.getId}
+                key={school._id}
+                _id={school._id} />
             }        
         );
     }
 
     getId(e){
-        // let id = e.target.parent.find.dataset['id'];
         let id = e.target.parentElement.dataset['id'];
-
-        this.setState({dataid: id});
+        this.setState({ dataid: id });
 
         if(e.target.name === 'edit'){
-            const exp = this.state.user.experience.filter(e => {
+            const exp = this.state.user.experience.find(e => {
                 return e._id === id;
             });
 
-            if(exp[0].to === null){
-                exp[0].workhere = true;
-                exp[0].to = exp[0].from;
+            if(exp.to === '' || exp.to === null){
+                exp.workhere = true;
+                exp.to = '';            
             }
             else{
-                exp[0].workhere = false;
+                exp.workhere = false;
+                exp.to = exp.to.substring(0, 10);
             }
 
-            this.setState({
+            this.setState(prevState => ({
+                ...prevState.modalEditExpForm,
                 modalEditExpForm: {
-                    title: exp[0].title,
-                    company: exp[0].company,
-                    location: exp[0].location,
-                    description: exp[0].description,
-                    from: exp[0].from.substring(0, 10),
-                    to: exp[0].to.substring(0, 10),
-                    workhere: exp[0].workhere
+                    title: exp.title,
+                    company: exp.company,
+                    location: exp.location,
+                    description: exp.description,
+                    from: exp.from.substring(0, 10),
+                    to: exp.to,
+                    workhere: exp.workhere
                 }
+            }));
+        }
+
+        if(e.target.name === 'eduedit'){
+            const edu = this.state.user.education.school.find(e => {
+                return e._id === id;
             });
+
+            edu.from = edu.from.substring(0, 10);
+            edu.to = edu.to.substring(0, 10);
+
+            this.setState(prevState => ({
+                ...prevState.modalEditEduForm,
+                modalEditEduForm: {
+                    ...edu
+                }
+            }));
         }
     }
 
@@ -161,6 +194,20 @@ class Profile extends Component {
                 from: '',
                 to: '',
                 workhere: false
+            },
+            modalAddEduForm: {
+                name: '',
+                course: '',
+                degree: '',
+                from: '',
+                to: ''
+            },
+            modalEditEduForm : {
+                name: '',
+                course: '',
+                degree: '',
+                from: '',
+                to: ''
             }
         });
     }    
@@ -170,7 +217,7 @@ class Profile extends Component {
         let user = this.state.user;
         if(user){
             user.experience = user.experience.filter(e => {
-            return e._id !== id;
+                return e._id !== id;
             });
 
             this.setState({ user: user});
@@ -188,18 +235,25 @@ class Profile extends Component {
         }        
     }
 
-    delEducation(){
-        let id;
-        let user = this.state.user;
-        if(user){
+    delEducation() {
+        const { dataid, user } = this.state;
+        if (user) {
             user.education.school = user.education.school.filter(e => {
-                return e._id !== id;
+                return e._id !== dataid;
             });
-            
-            this.setState({ user: user});
-            console.log(user.education.school)
-            $('#delEducation').modal('hide');      
-        }        
+
+            this.setState({ user: user, dataid: '' });
+            const { education } = this.state.user;
+
+            axios.patch('http://127.0.0.1:5000/profile/' + this.state.user._id, { education }, {
+                headers: { 'auth-token': getJwt() }
+            })
+                .then(({ data }) => {
+                    this.setState({ user: data.data, dataid: '' });
+                    $('#delEducation').modal('hide');
+                })
+                .catch(err => console.log(err));
+        }
     }
 
     addExperience(e){
@@ -221,20 +275,81 @@ class Profile extends Component {
     }
 
     editExperience(){
+        const id = this.state.dataid;
         const { modalEditExpForm, user } = this.state;
 
         //get the index of the experience that was modified
-        const indx = user.experience.findIndex(e => e._id = this.state.dataid);
-        user.experience[indx] = modalEditExpForm;
-        console.log(indx)
-        // $('#editExperience').modal('hide');
+        // const indx = user.experience.findIndex(e => e._id = id);
+        // user.experience[indx] = modalEditExpForm;
+        // this.setState({ user: user });
+        // console.log(indx)
 
-        axios.patch('http://localhost:5000/profile/' + this.state.user._id, {experience: user.experience }, { 
+        //trial 3
+        let editedUserExperience = user.experience.map(obj => {
+            return obj._id === id ? { ...modalEditExpForm, _id: id } : obj;
+        });
+
+        this.setState(prevState => ({
+            user: {
+                ...prevState.user,
+                experience: editedUserExperience
+            }, dataid: ''
+        }));
+
+        const { experience } = this.state.user;
+
+        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { experience: experience }, { 
             headers: { 'auth-token': getJwt() } })
             .then(({ data }) => {
                 $('#editExperience').modal('hide');
-                this.setState({dataid: '', experience: data.data.experience });
+                this.setState({dataid: '', user: data.data });
                 this.clearModal();
+            })
+            .catch(err => console.log(err));
+    }
+
+    addEducation(e){
+        e.preventDefault();
+        this.state.user.education.school.push(this.state.modalAddEduForm);
+        const { education } = this.state.user;
+
+        axios.patch('http://localhost:5000/profile/'+ this.state.user._id, { education }, {
+            headers: { 'auth-token': getJwt() }
+        })
+        .then(({ data }) => {
+            this.setState({ user: data.data });
+            $('#newEducation').modal('hide');
+            this.clearModal();
+        })
+        .catch(err => console.log(err));
+        console.log('add education');
+    }
+
+    async editEducation(e){ //let this async for beta setState
+        e.preventDefault();
+        const { modalEditEduForm, user, dataid } = this.state;
+
+        let editedEdu = user.education.school.map(obj => {
+            return obj._id === dataid ? { ...modalEditEduForm, _id: dataid } : obj;
+        });
+
+        await this.setState(prevState => ({
+            user: {
+                ...prevState.user,
+                education: {
+                    ...prevState.user.education,
+                    school: editedEdu
+                }
+            }, dataid: ''
+        }));
+
+        const { education } = this.state.user;
+        console.log(education )
+        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { education: education }, { headers: { 'auth-token': getJwt() } })
+            .then(({ data }) => {
+                this.setState({ user: data.data, dataid: '' });
+                this.clearModal();
+                $('#editEducation').modal('hide');
             })
             .catch(err => console.log(err));
     }
@@ -248,12 +363,21 @@ class Profile extends Component {
                     [name]: !this.state.modalAddExpForm.workhere,
                 }
             }));
-            if (this.state.modalAddExpForm.workhere) { this.setState({ modalAddExpForm: { to: null } }) }
+
+            if (this.state.modalAddExpForm.workhere) {
+                this.setState(prevState => ({
+                    modalAddExpForm: { ...prevState.modalAddExpForm, to: '' }
+                }))
+            }
         }
         else{
             this.setState(prevState => ({
                 modalAddExpForm: {
                     ...prevState.modalAddExpForm,
+                    [name]: value
+                }, 
+                modalAddEduForm: {
+                    ...prevState.modalAddEduForm,
                     [name]: value
                 }
             }));
@@ -266,15 +390,19 @@ class Profile extends Component {
             this.setState(prevState => ({
                 modalEditExpForm: {
                     ...prevState.modalEditExpForm,
-                    [name]: !this.state.modalEditExpForm.workhere
+                    [name]: !this.state.modalEditExpForm.workhere,
+                    to: ''
                 }
             }));
-            if (this.state.modalEditExpForm.workhere) { this.setState({ modalEditExpForm: { to: null } }) }
         }
         else{
             this.setState(prevState => ({
                 modalEditExpForm: {
                     ...prevState.modalEditExpForm,
+                    [name]: value
+                },
+                modalEditEduForm: {
+                    ...prevState.modalEditEduForm,
                     [name]: value
                 }
             }));
@@ -282,6 +410,14 @@ class Profile extends Component {
     }
 
     render() {
+        if(this.state.user.address === undefined){
+            var country = '';
+            var state =  '';
+        } else {
+            country = this.state.user.address.country;
+            state = this.state.user.address.state;
+        }
+
         return (
             <div>
                 <NavBar class={"navbar navbar-dark fixed-top pt-2 pb-2 pl-4 pr-4"} stylex={{ backgroundColor: 'rgba(9,93,207, 9)' }} imgSize={"35px"} url='/profile'>
@@ -298,7 +434,7 @@ class Profile extends Component {
                                     <img src={avatar} alt="profile" className="rounded-circle float-left" width="150px" />
                                     <Section class={'pl-3'}>
                                         <h4 className="font-weight-bold">{this.state.user.name.firstname + " " + this.state.user.name.lastname}</h4>
-                                        <p>{`${this.state.user.address.state}, ${this.state.user.address.country}`}</p>
+                                        <p>{state  + ',' + country}</p>
                                         <p>{this.state.email}</p>
                                         <p>{this.state.user.phone}</p>
                                     </Section>
@@ -335,7 +471,7 @@ class Profile extends Component {
                             <Section class="col-md-12 p-0">
                                 <Section class="header">
                                     <p className="float-left font-weight-bold">Education</p>
-                                    <button className="float-right btn font-weight-bold">+</button>
+                                    <button className="float-right btn font-weight-bold" data-toggle='modal' data-target='#newEducation'>+</button>
                                 </Section>
                             </Section>
 
@@ -346,6 +482,8 @@ class Profile extends Component {
                             </Section>
                         </Section>
 
+
+                        {/* Experience modals */}
                         <Modal id='newExperience' title={"Add Experience"} handleClick={this.addExperience} btnname="Save">
                             <Section class={"form-row"}>
                                 <Section class={"col-md-6"}>
@@ -396,7 +534,7 @@ class Profile extends Component {
                             <Section class={"form-row"}>
                                 <Section class={"col-md-6"}>
                                     <label htmlFor="etitle" className="small">Title</label><span className="redx"> *</span>
-                                    <input type="text" className="form-control" id="etitle" name="title" value={this.state.modalEditExpForm.title} onChange={this.handleChange2}/>
+                                    <input type="text" className="form-control" id="etitle" name="title" value={this.state.modalEditExpForm.title } onChange={this.handleChange2}/>
                                 </Section>
                                 <Section class="col-md-6">
                                     <label htmlFor="ecompany" className="small">Company</label><span className="redx"> *</span>
@@ -441,6 +579,70 @@ class Profile extends Component {
                         <Modal id='delExperience' title="Delete Experience" handleClick={this.delExperience} btnname='Delete'>
                             <p>Sure to delete?</p>
                         </Modal>
+
+
+                        {/* Education modals*/}
+                        <Modal id='newEducation' title="Add Education" handleClick={this.addEducation} btnname='Save'>
+                            <Section class={"form-row"}>
+                                <Section class={"col-md-12"}>
+                                    <label htmlFor="nname" className="small">University</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="nname" name="name" value={this.state.modalAddEduForm.name} onChange={this.handleChange} />
+                                </Section>
+                            </Section>
+                            <Section class={"form-row mt-2"}>
+                                <Section class={"col-md-6"}>
+                                    <label htmlFor="ncourse" className="small">Course</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ncourse" name="course" value={this.state.modalAddEduForm.course} onChange={this.handleChange} />
+                                </Section>
+                                <Section class="col-md-6">
+                                    <label htmlFor="ndegree" className="small">Degree</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ndegree" name="degree" value={this.state.modalAddEduForm.degree} onChange={this.handleChange} />
+                                </Section>
+                            </Section>
+                            <Section class={"form-row mt-2"}>
+                                <Section class={"col-md-6"}>
+                                    <label htmlFor="nefrom" className="small">From</label><span className="redx"> *</span>
+                                    <input type="date" id="nefrom" name="from" className="form-control" value={this.state.modalAddEduForm.from} onChange={this.handleChange}/>
+                                </Section>
+
+                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                    <label htmlFor="neto" className="small">To</label><span className="redx"> *</span>
+                                    <input type="date" name="to" id="neto" className="form-control" value={this.state.modalAddEduForm.to} onChange={this.handleChange}/>
+                                </Section>
+                            </Section>
+                        </Modal>
+
+
+                        <Modal id='editEducation' title="Edit Education" handleClick={this.editEducation} btnname='Save'>
+                            <Section class={"form-row"}>
+                                <Section class={"col-md-12"}>
+                                    <label htmlFor="ename" className="small">University</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ename" name="name" value={this.state.modalEditEduForm.name} onChange={this.handleChange2} />
+                                </Section>
+                            </Section>
+                            <Section class={"form-row mt-2"}>
+                                <Section class={"col-md-6"}>
+                                    <label htmlFor="ecourse" className="small">Course</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ecourse" name="course" value={this.state.modalEditEduForm.course} onChange={this.handleChange2} />
+                                </Section>
+                                <Section class="col-md-6">
+                                    <label htmlFor="edegree" className="small">Degree</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="edegree" name="degree" value={this.state.modalEditEduForm.degree} onChange={this.handleChange2} />
+                                </Section>
+                            </Section>
+                            <Section class={"form-row mt-2"}>
+                                <Section class={"col-md-6"}>
+                                    <label htmlFor="eefrom" className="small">From</label><span className="redx"> *</span>
+                                    <input type="date" id="eefrom" name="from" className="form-control" value={this.state.modalEditEduForm.from} onChange={this.handleChange2}/>
+                                </Section>
+
+                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                    <label htmlFor="eeto" className="small">To</label><span className="redx"> *</span>
+                                    <input type="date" name="to" id="eeto" className="form-control" value={this.state.modalEditEduForm.to} onChange={this.handleChange2}/>
+                                </Section>
+                            </Section>
+                        </Modal>
+
                         <Modal id='delEducation' title="Delete Education" handleClick={this.delEducation} btnname='Delete'>
                             <p>Sure to delete?</p>
                         </Modal>
