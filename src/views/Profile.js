@@ -91,7 +91,7 @@ class Profile extends Component {
     ExperienceList() {
         return this.state.user.experience.map((experience) => {
             let to = experience.to;
-            to = (to === null || to === '') ? 'Present' : '';
+            to = (to === null || to === '') ? 'Present' : to;
             return <Experience
                         title={experience.title}
                         company={experience.company}
@@ -274,22 +274,16 @@ class Profile extends Component {
         .catch(err => console.log(err));        
     }
 
-    editExperience(){
-        const id = this.state.dataid;
-        const { modalEditExpForm, user } = this.state;
+    async editExperience(){
+        const { modalEditExpForm, user, dataid } = this.state;
 
-        //get the index of the experience that was modified
-        // const indx = user.experience.findIndex(e => e._id = id);
-        // user.experience[indx] = modalEditExpForm;
-        // this.setState({ user: user });
-        // console.log(indx)
-
-        //trial 3
+        //replace the edited data
         let editedUserExperience = user.experience.map(obj => {
-            return obj._id === id ? { ...modalEditExpForm, _id: id } : obj;
+            return obj._id === dataid ? { ...modalEditExpForm, _id: dataid } : obj;
         });
 
-        this.setState(prevState => ({
+        //use await because process waste time
+        await this.setState(prevState => ({
             user: {
                 ...prevState.user,
                 experience: editedUserExperience
@@ -322,7 +316,6 @@ class Profile extends Component {
             this.clearModal();
         })
         .catch(err => console.log(err));
-        console.log('add education');
     }
 
     async editEducation(e){ //let this async for beta setState
@@ -344,7 +337,7 @@ class Profile extends Component {
         }));
 
         const { education } = this.state.user;
-        console.log(education )
+
         axios.patch('http://localhost:5000/profile/' + this.state.user._id, { education: education }, { headers: { 'auth-token': getJwt() } })
             .then(({ data }) => {
                 this.setState({ user: data.data, dataid: '' });
@@ -410,6 +403,7 @@ class Profile extends Component {
     }
 
     render() {
+        //handles error for new users w/o state and country
         if(this.state.user.address === undefined){
             var country = '';
             var state =  '';

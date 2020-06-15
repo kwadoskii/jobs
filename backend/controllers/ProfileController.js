@@ -19,13 +19,8 @@ exports.getProfile = function (req, res){
 exports.addProfile = function(req, res){
     const { name, phone, address, experience, education } = req.body;
     
-    profile = new Profile();
+    profile = new Profile({ name, phone, address, experience, education });
     profile.user = req.auth.user.id;
-    profile.name = name;
-    profile.phone = phone;
-    profile.address = address;
-    profile.experience = experience;
-    profile.education = education;
 
     profile.save()
         .then(profile => {
@@ -38,10 +33,7 @@ exports.addProfile = function(req, res){
         }));    
 }
 
-exports.editProfile = function (req, res){
-
-    // Profile.find({ _id: req.params.id }).then(profile => res.send(profile)).catch(err => res.send(err));
-    
+exports.editProfile = function (req, res){    
     Profile.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true }).populate('user', 'email')
         .then(profile => {
             res.status(200).send({
@@ -54,4 +46,18 @@ exports.editProfile = function (req, res){
                     error: err
                 }
         }));   
+}
+
+exports.downloadProfile = function (req, res){
+    Profile.findOne({ user: req.auth.user.id }).populate('user', 'email').select(['name', 'phone', 'address', 'experience', 'education']).lean()
+        .then(profile => {
+            res.status(200).send({
+                ...profile
+            });
+        }).catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));    
 }

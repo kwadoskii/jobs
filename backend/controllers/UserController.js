@@ -5,7 +5,12 @@ const bcrypt = require('bcryptjs');
 exports.userList = function (req, res) {
     User.find()
         .then(user => res.json(user))
-        .catch(err => res.status(400).json('Error: ' + err));
+        .catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 };
 
 exports.user = function (req, res) {
@@ -16,23 +21,49 @@ exports.user = function (req, res) {
                 res.status(200).json(user);
             else
                 res.status(400).json({ message: `User id: ${id} not found` });
-        }).catch(err => res.status(400).json({ message: err }))
+        }).catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 }
 
-exports.userCreate = function (req, res) {
-    const { name, email, phone, address, experience, education } = req.body;
-    const user = new User({ name, email, phone, address, experience, education });
+// exports.userCreate = function (req, res) {
+//     const { name, email, phone, address, experience, education } = req.body;
+//     const user = new User({ name, email, phone, address, experience, education });
 
-    user.save()
+//     user.save()
+//         .then(user => {
+//             res.status(201).json({ message: 'User created successfully', id: user._id })
+//         }).catch(err => res.status(400).json({ err: err }));
+// }
+
+exports.changePW = function (req, res) {
+    const { password, currentp } = req.body;
+    const id = req.auth.user.id;
+
+    User.findOne({_id: id})
         .then(user => {
-            res.status(201).json({ message: 'User created successfully', id: user._id })
-        }).catch(err => res.status(400).json({ err: err }));
-}
-
-exports.userPatch = function (req, res) {
-    User.findByIdAndUpdate(req.params.id, req.body, { new: true })
-        .then(user => res.status(201).json({ message: `User id: ${user._id} updated successfully` }))
-        .catch(err => res.status(400).json({ err: err }));
+            const validPassword = bcrypt.compareSync(currentp, user.password);
+            if (!validPassword) { res.status(202).send({ status: 'error', data: { error: 'Current password is wrong!' } }); }
+            if (validPassword) {
+                const hashpassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+                User.findByIdAndUpdate(id, { password: hashpassword }, { new: true })
+                    .then(user => res.status(201).send({ status: 'success', data: { message: 'Updated successfully' } }))
+                    .catch(err => res.status(400).send({
+                        status: 'error',
+                        data: {
+                            error: err
+                        }
+                    }));
+        }})
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: {
+                error: err
+            }
+        }));    
 }
 
 exports.userDelete = function (req, res) {
@@ -42,12 +73,22 @@ exports.userDelete = function (req, res) {
             if (user) {
                 User.findByIdAndDelete(id)
                     .then((user) => res.status(201).json({ message: `User id: ${user._id} deleted` }))
-                    .catch(err => res.status(400).json({ err: err }));
+                    .catch(err => res.status(400).send({
+                        status: 'error',
+                            data: {
+                                error: err
+                            }
+                    }));
             }
             else
                 res.status(400).json({ message: `User id: ${id} not found` });
         })
-        .catch(err => res.status(400).json({ err: err }));
+        .catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 }
 
 //Signin and Register

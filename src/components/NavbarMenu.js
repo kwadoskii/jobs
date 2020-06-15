@@ -9,7 +9,7 @@ import { getJwt } from '../helper/jwt';
 
 class NavbarMenu extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         
         this.state = {
             name: {
@@ -29,16 +29,11 @@ class NavbarMenu extends Component {
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/profile', {
-            headers: {
-                'auth-token': getJwt()
-
-            }
-        })
-        .then(response => {
-            const { name, user } = response.data.data;
-            this.setState({ name: name, email: user.email })
-        }).catch(err => console.log(err));
+        axios.get('http://localhost:5000/profile', { headers: { 'auth-token': getJwt() } })
+            .then(({ data }) => {
+                const { name, user } = data.data;
+                this.setState({ name: name, email: user.email })
+            }).catch(err => console.log(err));
     }
 
     render() {
@@ -63,7 +58,6 @@ class NavbarMenu extends Component {
                             <Link className="dropdown-item" to="/academy">SmartAcademy</Link>
                             <Section class="dropdown-divider" />
                             <Link className="dropdown-item" to={ "/setting"}>Settings</Link>
-                            {/* <Link className="dropdown-item" to={ "/setting/" + this.state.user._id }>Settings</Link> */}
                             <Section class="dropdown-divider" />
                             <Link className="dropdown-item" to="/signin" onClick={this.handleSignOut}>Sign out</Link>
                         </Section>

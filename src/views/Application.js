@@ -28,7 +28,7 @@ class Application extends Component {
                         </Section>
 
                         <Section class="col-md-5">
-                            <Link to="/applications/one" className="text-reset"><h5 class="font-weight-bold">Hospitality Manager</h5></Link>
+                            <Link to="/applications/one" className="text-reset"><h5 className="font-weight-bold">Hospitality Manager</h5></Link>
                             <p className="font-weight-thin">Hotel Direct</p>
                             <p className="font-weight-thin">Lagos, Nigeria</p>
                         </Section>
@@ -48,7 +48,7 @@ class Application extends Component {
                         </Section>
 
                         <Section class="col-md-5">
-                            <Link to="/applications/two" class="text-reset"><h5 class="font-weight-bold">PHP Engineer (Senior and Intermediate)</h5></Link>
+                            <Link to="/applications/two" className="text-reset"><h5 className="font-weight-bold">PHP Engineer (Senior and Intermediate)</h5></Link>
                             <p className="font-weight-thin">Wooden Trees</p>
                             <p className="font-weight-thin">Lagos, Nigeria</p>
                         </Section>

@@ -1,20 +1,86 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar'
-import NavbarMenu from '../components/NavbarMenu'
-import Section from '../components/Section'
-import Modal from '../components/Modal'
-import lock from '../images/lock.png'
-import globe from '../images/globe.png'
-import upload from '../images/upload.png'
-import idcard from '../images/idcard.png'
+import NavbarMenu from '../components/NavbarMenu';
+import Section from '../components/Section';
+import Modal from '../components/Modal';
+import lock from '../images/lock.png';
+import globe from '../images/globe.png';
+import upload from '../images/upload.png';
+import idcard from '../images/idcard.png';
+import { getJwt } from '../helper/jwt';
+import Axios from 'axios';
+import $ from 'jquery';
 
 class Setting extends Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            currentp: '',
+            password: '',
+            password2: '',
+            error: ''
+        }
+
+        this.handleOnChange = this.handleOnChange.bind(this);
+        this.changePassword = this.changePassword.bind(this);
+        this.clearForm = this.clearForm.bind(this);
+    }
+    
+    handleOnChange({ target: { value, name } }) {
+        this.setState({
+            [name]: value
+        });
+    }
+
+    clearForm(){
+        this.setState({
+            currentp: '',
+            password: '',
+            password2: '',
+            error: ''
+        });
+    }
+
+    exportData(e){
+        e.preventDefault();
+        
+        //export profile to user as a download
+        fetch('http://localhost:5000/profile/download', { headers: { 'auth-token': getJwt() }})
+			.then(response => {
+				response.blob().then(blob => {
+					let url = window.URL.createObjectURL(blob);
+					let a = document.createElement('a');
+					a.href = url;
+					a.download = 'profile.json';
+					a.click();
+				});
+				//window.location.href = response.url;
+		});
+    }
+
+    changePassword(){
+        const { password, password2, currentp } = this.state;
+        if(password !== password2){
+            this.setState({ error: 'pw does not match'});            
+        }
+        else{
+            Axios.patch('http://localhost:5000/users/changepassword', { password, currentp }, { headers: { 'auth-token': getJwt() } })
+                .then(({ data }) => {
+                    this.clearForm();
+                    $('#changepassword').modal('hide');
+                    localStorage.removeItem('auth-token');
+                    this.props.history.push('/signin');
+                }).catch(err => console.log(err));
+        }
+    }
+
     render() {
         return (
             <div>
                 <Navbar class={"navbar navbar-dark fixed-top pt-2 pb-2 pl-4 pr-4"} stylex={{ backgroundColor: 'rgba(9,93,207, 9)' }} imgSize={"35px"} url='/setting'>
-                    <NavbarMenu userId="5ec6c2604122631efc492d72"/>
+                    <NavbarMenu />
                 </Navbar>
 
                 <Section class={"bg-c wrapper p-5"}>
@@ -64,7 +130,7 @@ class Setting extends Component {
                             <Section class={"col-md-11"}>
                                 <p className="font1-1 p-0 m-0">Export my SmartProfile data</p>
                                 <Section class={"mt-2"}>
-                                    <Link to="/setting" className="font1-1 p-0">Export as JSON</Link>
+                                    <Link to="" className="font1-1 p-0" onClick={this.exportData}>Export as JSON</Link>
                                 </Section>
                             </Section>
                         </Section>
@@ -87,32 +153,32 @@ class Setting extends Component {
                     </Section>
                 </Section>
 
-                <Modal id="changepassword" title={"Change password"}>
+
+                {/* change password modal */}
+                <Modal id="changepassword" title={"Change password"} handleClick={this.changePassword} btnname="Save Changes">
                     <Section class={"form-row"}>
+                        <p className="text-muted">{this.state.error}</p>
                         <Section class={"col-md-12"}>
-                            <label htmlFor="currentpassword" className="small">Current password</label><span className="redx"> *</span>
-                            <input type="password" className="form-control" name="currentpassword" />
+                            <label htmlFor="currentp" className="small">Current password</label><span className="redx"> *</span>
+                            <input type="password" className="form-control" name="currentp" value={this.state.currentp} onChange={this.handleOnChange} />
                         </Section>
-                        <Section class="col-md-12">
-                            <label htmlFor="newpassword" className="small">New password</label><span className="redx"> *</span>
-                            <input type="password" className="form-control" name="newpassword" />
+                        <Section class="col-md-12 mt-2">
+                            <label htmlFor="password" className="small">New password</label><span className="redx"> *</span>
+                            <input type="password" className="form-control" name="password" value={this.state.password} onChange={this.handleOnChange} />
                         </Section>
-                        <Section class="col-md-12">
-                            <label htmlFor="confirmpassword" className="small">Confirm password</label><span className="redx"> *</span>
-                            <input type="password" className="form-control" name="confirmpassword" />
+                        <Section class="col-md-12 mt-2">
+                            <label htmlFor="password2" className="small">Confirm password</label><span className="redx"> *</span>
+                            <input type="password" className="form-control" name="password2" value={this.state.password2} onChange={this.handleOnChange} />
                         </Section>
                     </Section>
                 </Modal>
 
-                <Modal id="sureToDeleteAcc" title="Delete Account?">
+
+                {/* delete account modal */}
+                <Modal id="sureToDeleteAcc" title="Delete Account?" btnname="Delete">
                     <Section class="row p-1">
                         <p className="text-center">Sure to delete account?</p>
                     </Section>
-
-                    {/* <Section class={"modal-footer"}>
-                        <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" className="btn btn-primary">Save changes</button>
-                    </Section> */}
                 </Modal>
             </div>
         );

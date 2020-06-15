@@ -28,15 +28,13 @@ class Auth extends Component {
                 }).catch(err => {
                     localStorage.removeItem('auth-token');
                     this.props.history.push('/');
-                })
-
+                });
     }
 
     render() {
         if (this.state.auth === undefined) {
             return (
                 <div>
-                    
                 </div>
             );
         }

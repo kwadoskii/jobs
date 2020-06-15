@@ -5,6 +5,7 @@ const profileController =   require('../controllers/ProfileController');
 // router.get('/', profileController.userList);
 // router.delete('/:id', profileController.userDelete);
 router.get('/', profileController.getProfile);
+router.get('/download', profileController.downloadProfile);
 router.post('/', profileController.addProfile);
 router.patch('/:id', profileController.editProfile);
 
