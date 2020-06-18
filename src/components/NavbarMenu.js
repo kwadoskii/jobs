@@ -4,7 +4,7 @@ import Section from './Section';
 import Button from './Button';
 import avatar from '../images/avatar.png';
 import { Link } from 'react-router-dom';
-import { getJwt } from '../helper/jwt';
+import { getJwt, removeJwt } from '../helper/jwt';
 
 
 class NavbarMenu extends Component {
@@ -24,7 +24,8 @@ class NavbarMenu extends Component {
     
 
     handleSignOut(){
-        localStorage.removeItem('auth-token');
+        removeJwt();
+        //localStorage.removeItem('auth-token');
         // this.props.history.push('/signin');
     }
 
