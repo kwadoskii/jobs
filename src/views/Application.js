@@ -5,7 +5,8 @@ import NavBarMenu from '../components/NavbarMenu';
 import Section from '../components/Section';
 import avatar from '../images/hotel-direct.png';
 import avatar2 from '../images/wooden-tree.png';
-import Announcement from '../components/Announcement'
+import Announcement from '../components/Announcement';
+import { getJwt } from '../helper/jwt';
 
 class Application extends Component {
     render() {

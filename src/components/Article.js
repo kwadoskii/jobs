@@ -10,14 +10,14 @@ class Article extends Component {
     }
 
     render() {
-        const shorten = this.props.details ? this.props.details.substring(0, 275) + '...' : '';
+        const shorten = (this.props.details.length) > 350 ? this.props.details.substring(0, 350) + ' . . .' : this.props.details;
         return (
             <div>
-                <Section class={"row radiusx bg-white p-4 shadow-sm mt-2"}>
+                <Section class={"row radiusx bg-white p-4 shadow-sm mt-4"}>
                     <Section class={"col-md-12 p-4 bg-image"} stylex={{ 'backgroundImage': `url(${this.props.imgurl})` }}></Section>
                     <Section class={"mt-3"}>
-                        <Link to={"/academy/" + this.props.id} className="text-reset"><h3>{this.props.title}</h3></Link>
-                        <p className="text-muted font1-1">{shorten}</p>
+                        <Link to={"/academy/" + this.props.id} className="text-reset mb-3"><h3>{this.props.title}</h3></Link>
+                        <p className="text-muted font1-1" style={{ textAlign: "justify", fontSize: "0.95rem" }}>{shorten}</p>
 
                         <Section class={"hashtagholder pb-4"}>
                             {this.TagsL()}

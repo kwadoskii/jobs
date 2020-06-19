@@ -172,3 +172,31 @@ ul{
 .linkx:hover{
   color: darkblue;
 }
+
+.modal-footer{
+  display: contents !important;
+  border-top: none !important;
+}
+
+.modal-header{
+  border-bottom: none !important;
+}
+
+.fl{
+  float: left;
+  width: 45%;
+}
+
+.fr{
+  width: 45%;
+  float: right;
+}
+
+.btn.edit, .btn.edit:hover{
+  color: white;
+  position: absolute;
+  right: 2.5%;
+  top: 9%;
+  font-weight: lighter !important;
+  border: thin solid white;
+}

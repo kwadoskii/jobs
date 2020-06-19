@@ -56,24 +56,30 @@ class Setting extends Component {
 					a.download = 'profile.json';
 					a.click();
 				});
-				//window.location.href = response.url;
 		});
     }
 
-    changePassword(){
+    changePassword(e){
         const { password, password2, currentp } = this.state;
         if(password !== password2){
-            this.setState({ error: 'pw does not match'});            
+            this.setState({ error: 'pw does not match'});
+            e.preventDefault();
+            return;            
         }
-        else{
-            Axios.patch('http://localhost:5000/users/changepassword', { password, currentp }, { headers: { 'auth-token': getJwt() } })
-                .then(({ data }) => {
-                    this.clearForm();
-                    $('#changepassword').modal('hide');
-                    localStorage.removeItem('auth-token');
-                    this.props.history.push('/signin');
-                }).catch(err => console.log(err));
+        if(password === '' || password2 === '' || currentp === ''){
+            this.setState({ error: 'Fill all fields'}); 
+            e.preventDefault();
+            return;        
         }
+        
+        e.preventDefault();
+        Axios.patch('http://localhost:5000/users/changepassword', { password, currentp }, { headers: { 'auth-token': getJwt() } })
+            .then(({ data }) => {
+                this.clearForm();
+                $('#changepassword').modal('hide');
+                localStorage.removeItem('auth-token');
+                this.props.history.push('/signin');
+            }).catch(err => console.log(err));        
     }
 
     render() {
@@ -155,28 +161,32 @@ class Setting extends Component {
 
 
                 {/* change password modal */}
-                <Modal id="changepassword" title={"Change password"} handleClick={this.changePassword} btnname="Save Changes">
+                <Modal id="changepassword" title={"Change password"} handleClick={this.changePassword} btnname="Save" size='sm'>
                     <Section class={"form-row"}>
                         <p className="text-muted">{this.state.error}</p>
                         <Section class={"col-md-12"}>
                             <label htmlFor="currentp" className="small">Current password</label><span className="redx"> *</span>
-                            <input type="password" className="form-control" name="currentp" value={this.state.currentp} onChange={this.handleOnChange} />
+                            <input type="password" className="form-control" name="currentp" value={this.state.currentp} onChange={this.handleOnChange} required />
                         </Section>
+                    </Section>
+                    <Section class={"form-row"}>
                         <Section class="col-md-12 mt-2">
                             <label htmlFor="password" className="small">New password</label><span className="redx"> *</span>
-                            <input type="password" className="form-control" name="password" value={this.state.password} onChange={this.handleOnChange} />
+                            <input type="password" className="form-control" name="password" value={this.state.password} onChange={this.handleOnChange} required />
                         </Section>
+                    </Section>
+                    <Section class={"form-row"}>
                         <Section class="col-md-12 mt-2">
                             <label htmlFor="password2" className="small">Confirm password</label><span className="redx"> *</span>
-                            <input type="password" className="form-control" name="password2" value={this.state.password2} onChange={this.handleOnChange} />
+                            <input type="password" className="form-control" name="password2" value={this.state.password2} onChange={this.handleOnChange} required />
                         </Section>
                     </Section>
                 </Modal>
 
 
                 {/* delete account modal */}
-                <Modal id="sureToDeleteAcc" title="Delete Account?" btnname="Delete">
-                    <Section class="row p-1">
+                <Modal id="sureToDeleteAcc" title="Delete Account?" btnname="Delete" size='sm'>
+                    <Section class="row p-2" stylex={{margin: "auto", justifyContent: "center"}}>
                         <p className="text-center">Sure to delete account?</p>
                     </Section>
                 </Modal>

@@ -7,7 +7,6 @@ import Section from '../components/Section';
 import Banner from '../components/Banner';
 import { getJwt } from '../helper/jwt';
 import Tag from '../components/Tag';
-// import bgImage from '../images/proactive-guide-to-getting-hapy-at-work.jpg'
 
 class Post extends Component {
     constructor(props) {
@@ -18,7 +17,7 @@ class Post extends Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         const jwt = getJwt();
         axios.get('http://localhost:5000/posts/' + this.props.match.params.id, { headers: { 'auth-token': jwt } })
             .then(post => {
@@ -31,8 +30,8 @@ class Post extends Component {
 
     render() {
         const TagsL = () => {
-            if(this.state.post.tags) {
-                return this.state.post.tags.map((tag, i) => <Tag tag={tag} key={i} /> );
+            if (this.state.post.tags) {
+                return this.state.post.tags.map((tag, i) => <Tag tag={tag} key={i} />);
             } else {
                 return '';
             }
@@ -45,30 +44,32 @@ class Post extends Component {
                 </Navbar>
 
                 <Section class={"wrapper bg-c"}>
-                    <Banner />
+                    <Section class="container" >
+                        <Banner />
 
-                    {/* loop posts here */}
-                    <Section class={"row mt-4 bg-white radiusx shadow-sm"}>
-                        <Section class={"bg-image article-img"} stylex={{ backgroundImage: `url(${this.state.post.imgurl})` }}></Section>
+                        {/* loop posts here */}
+                        <Section class={"row mt-4 bg-white radiusx shadow-sm"}>
+                            <Section class={"bg-image article-img"} stylex={{ backgroundImage: `url(${this.state.post.imgurl})` }}></Section>
 
-                        <Section stylex={{ position: 'relative', top: '-7em', padding: '0 0em' }} class="pr-5 pl-5">
-                            <Section class="bg-white article radius-sm">
-                                <h3>{this.state.post.title}</h3>
-                                <Section class="hashtagholder">
-                                    {TagsL()}
+                            <Section stylex={{ position: 'relative', top: '-7em', padding: '0 0em' }} class="pr-5 pl-5">
+                                <Section class="bg-white article radius-sm">
+                                    <h3>{this.state.post.title}</h3>
+                                    <Section class="hashtagholder">
+                                        {TagsL()}
+                                    </Section>
                                 </Section>
-                            </Section>
 
-                            <Section class="main-article bg-white">
-                                <p className="font1-1">
-                                    {this.state.post.details}
-                                </p>                                
+                                <Section class="main-article bg-white">
+                                    <p className="font1-1">
+                                        {this.state.post.details}
+                                    </p>
 
-                                <Link to="/academy"><button className="btn mt-2 rounded-pill btlist text-muted">Back to List</button></Link>
-                                <p className="mt-3 mb-1 p-0">Powered by</p>
-                                <p className="mt-0 font1-1">
-                                    <span className="font-weight-bold">Smart</span>Recruiters
+                                    <Link to="/academy"><button className="btn mt-2 rounded-pill btlist text-muted">Back to List</button></Link>
+                                    <p className="mt-3 mb-1 p-0">Powered by</p>
+                                    <p className="mt-0 font1-1">
+                                        <span className="font-weight-bold">Smart</span>Recruiters
                                 </p>
+                                </Section>
                             </Section>
                         </Section>
                     </Section>

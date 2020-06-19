@@ -21,11 +21,9 @@ class NavbarMenu extends Component {
 
         this.handleSignOut = this.handleSignOut.bind(this);
     }
-    
 
     handleSignOut(){
         removeJwt();
-        //localStorage.removeItem('auth-token');
         // this.props.history.push('/signin');
     }
 

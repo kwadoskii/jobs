@@ -63,6 +63,11 @@ class Profile extends Component {
                 degree: '',
                 from: '',
                 to: ''
+            },
+            modalEditProfileForm: {
+                phone: '',
+                state: '',
+                country: ''
             }
         }
 
@@ -75,6 +80,7 @@ class Profile extends Component {
         this.getId = this.getId.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleChange2 = this.handleChange2.bind(this);
+        this.editProfile = this.editProfile.bind(this);
     }
 
     async componentDidMount() {
@@ -83,9 +89,16 @@ class Profile extends Component {
                 'auth-token': getJwt()
             }
         })
-        .then(({data}) => {
-            this.setState( prevState => ({ ...prevState.user, user: data.data, email: data.data.user.email }));
-        }).catch(err => console.log(err));
+            .then(({ data }) => {
+                this.setState(prevState => ({
+                    ...prevState,
+                    user: {
+                        ...prevState.user,
+                        ...data.data
+                    },
+                    email: data.data.user.email
+                }));
+            }).catch(err => console.log(err));
     }
 
     ExperienceList() {
@@ -124,6 +137,31 @@ class Profile extends Component {
                 _id={school._id} />
             }        
         );
+    }
+
+    editProfile(e) {
+        e.preventDefault();
+
+        const { phone, country, state } = this.state.modalEditProfileForm;
+        const address = { country, state };
+
+        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { phone, address }, { headers: { 'auth-token': getJwt() } })
+            .then(({ data : { data } }) => {
+                this.setState(prevState => ({
+                    ...prevState,
+                    user: {
+                        ...prevState.user,
+                        phone: data.phone,
+                        address: {
+                            state: data.address.state,
+                            country: data.address.country
+                        }
+                    }
+                }
+                ));
+            })
+            .catch(err => console.log(err));
+        $('#editProfile').modal('hide');
     }
 
     getId(e){
@@ -170,6 +208,17 @@ class Profile extends Component {
                 ...prevState.modalEditEduForm,
                 modalEditEduForm: {
                     ...edu
+                }
+            }));
+        }
+
+        if(e.target.name === 'profileEdit'){
+            this.setState(prevState => ({
+                ...prevState.modalEditProfileForm,
+                modalEditProfileForm: {
+                    phone: this.state.user.phone,
+                    state: this.state.user.address.state,
+                    country: this.state.user.address.country,
                 }
             }));
         }
@@ -284,6 +333,7 @@ class Profile extends Component {
 
         //use await because process waste time
         await this.setState(prevState => ({
+            ...prevState,
             user: {
                 ...prevState.user,
                 experience: editedUserExperience
@@ -327,6 +377,7 @@ class Profile extends Component {
         });
 
         await this.setState(prevState => ({
+            ...prevState,
             user: {
                 ...prevState.user,
                 education: {
@@ -371,6 +422,10 @@ class Profile extends Component {
                 }, 
                 modalAddEduForm: {
                     ...prevState.modalAddEduForm,
+                    [name]: value
+                },
+                modalEditProfileForm: {
+                    ...prevState.modalEditProfileForm,
                     [name]: value
                 }
             }));
@@ -428,10 +483,12 @@ class Profile extends Component {
                                     <img src={avatar} alt="profile" className="rounded-circle float-left" width="150px" />
                                     <Section class={'pl-3'}>
                                         <h4 className="font-weight-bold">{this.state.user.name.firstname + " " + this.state.user.name.lastname}</h4>
-                                        <p>{state  + ',' + country}</p>
+                                        <p>{state  + ', ' + country}</p>
                                         <p>{this.state.email}</p>
                                         <p>{this.state.user.phone}</p>
                                     </Section>
+
+                                    <button className="float-right btn font-weight-bold edit" data-toggle="modal" data-target="#editProfile" name='profileEdit' onClick={this.getId}>edit</button>
                                 </Section>
                             </Section>
                         </Section>
@@ -477,10 +534,44 @@ class Profile extends Component {
                         </Section>
 
 
+                        {/* edit profile modal */}
+                        <Modal id='editProfile' title='Edit Profile' handleClick={this.editProfile} btnname='Save' size='md' >
+                            <Section class='form-row'>
+                                <Section class="col-md-6">
+                                    <label htmlFor="efirstname" className="small">Firstname:</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="efirstname" name="firstname" value={this.state.user.name.firstname} disabled />
+                                </Section>
+                                <Section class="col-md-6">
+                                    <label htmlFor="elastname" className="small">Lastname:</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="elastname" name="emaillastname" value={this.state.user.name.lastname} disabled />
+                                </Section>
+                            </Section>
+                            <Section class='form-row mt-3'>
+                                <Section class="col-md-6">
+                                    <label htmlFor="eemail" className="small">Email:</label><span className="redx"> *</span>
+                                    <input type="email" className="form-control" id="eemail" name="email" value={this.state.email} disabled/>
+                                </Section>
+                                <Section class="col-md-6">
+                                    <label htmlFor="ephone" className="small">Phone number:</label><span className="redx"> *</span>
+                                    <input type="tel" className="form-control" id="ephone" name="phone" value={this.state.modalEditProfileForm.phone} onChange={this.handleChange} required/>
+                                </Section>
+                            </Section>
+                            <Section class='form-row mt-3'>
+                                <Section class="col-md-6">
+                                    <label htmlFor="estate" className="small">State:</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="estate" name="state" value={this.state.modalEditProfileForm.state} onChange={this.handleChange} required/>
+                                </Section>
+                                <Section class="col-md-6">
+                                    <label htmlFor="ecountry" className="small">Country:</label><span className="redx"> *</span>
+                                    <input type="text" className="form-control" id="ecountry" name="country" value={this.state.modalEditProfileForm.country} onChange={this.handleChange} required/>
+                                </Section>
+                            </Section>
+                        </Modal>
+
                         {/* Experience modals */}
-                        <Modal id='newExperience' title={"Add Experience"} handleClick={this.addExperience} btnname="Save">
-                            <Section class={"form-row"}>
-                                <Section class={"col-md-6"}>
+                        <Modal id='newExperience' title="Add Experience" handleClick={this.addExperience} btnname="Save">
+                            <Section class="form-row">
+                                <Section class="col-md-6">
                                     <label htmlFor="ntitle" className="small">Title</label><span className="redx"> *</span>
                                     <input type="text" className="form-control" id="ntitle" name="title" value={this.state.modalAddExpForm.title} onChange={this.handleChange}/>
                                 </Section>
@@ -497,36 +588,36 @@ class Profile extends Component {
                                 </Section>
                             </Section>
 
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-12"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-12">
                                     <label htmlFor="ndescription" className="small">Description</label>
                                     <textarea rows="3" className="form-control" id="ndescription" name="description" value={this.state.modalAddExpForm.description} onChange={this.handleChange}></textarea>
                                 </Section>
                             </Section>
 
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-6"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-6">
                                     <label htmlFor="nfrom" className="small">From</label><span className="redx"> *</span>
                                     <input type="date" id="nfrom" name="from" className="form-control" value={this.state.modalAddExpForm.from} onChange={this.handleChange}/>
                                 </Section>
 
-                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                <Section class="col-md-6" stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
                                     <label htmlFor="nto" className="small">To</label><span className="redx"> *</span>
                                     <input type="date" name="to" id="nto" className="form-control" value={this.state.modalAddExpForm.to} onChange={this.handleChange}/>
                                 </Section>
                             </Section>
 
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-12"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-12">
                                     <input type="checkbox" name="workhere" className='mr-2' checked={this.state.modalAddExpForm.workhere} onChange={this.handleChange} />
                                     <span>I currently work here</span>
                                 </Section>
                             </Section>
                         </Modal>
 
-                        <Modal id='editExperience' title={"Edit Experience"} handleClick={this.editExperience} btnname="Save Changes">
-                            <Section class={"form-row"}>
-                                <Section class={"col-md-6"}>
+                        <Modal id='editExperience' title="Edit Experience" handleClick={this.editExperience} btnname="Save Changes">
+                            <Section class="form-row">
+                                <Section class="col-md-6">
                                     <label htmlFor="etitle" className="small">Title</label><span className="redx"> *</span>
                                     <input type="text" className="form-control" id="etitle" name="title" value={this.state.modalEditExpForm.title } onChange={this.handleChange2}/>
                                 </Section>
@@ -543,48 +634,48 @@ class Profile extends Component {
                                 </Section>
                             </Section>
 
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-12"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-12">
                                     <label htmlFor="edescription" className="small">Description</label>
                                     <textarea rows="3" className="form-control" id="edescription" name="description" value={this.state.modalEditExpForm.description} onChange={this.handleChange2}></textarea>
                                 </Section>
                             </Section>
 
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-6"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-6">
                                     <label htmlFor="efrom" className="small">From</label><span className="redx"> *</span>
                                     <input type="date" id="efrom" name="from" className="form-control" value={this.state.modalEditExpForm.from} onChange={this.handleChange2}/>
                                 </Section>
 
-                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalEditExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                <Section class="col-md-6" stylex={{ visibility: (this.state.modalEditExpForm.workhere) ? 'hidden' : 'visible' }}>
                                     <label htmlFor="eto" className="small">To</label><span className="redx"> *</span>
                                     <input type="date" id="eto" name="to" className="form-control" value={this.state.modalEditExpForm.to} onChange={this.handleChange2}/>
                                 </Section>
                             </Section>
 
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-12"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-12">
                                     <input type="checkbox" name="workhere" className="mr-2" checked={this.state.modalEditExpForm.workhere} onChange={this.handleChange2} />
                                     <span>I currently work here</span>
                                 </Section>
                             </Section>
                         </Modal>
 
-                        <Modal id='delExperience' title="Delete Experience" handleClick={this.delExperience} btnname='Delete'>
+                        <Modal id='delExperience' title="Delete Experience" handleClick={this.delExperience} btnname='Delete' size='sm'>
                             <p>Sure to delete?</p>
                         </Modal>
 
 
                         {/* Education modals*/}
                         <Modal id='newEducation' title="Add Education" handleClick={this.addEducation} btnname='Save'>
-                            <Section class={"form-row"}>
-                                <Section class={"col-md-12"}>
+                            <Section class="form-row">
+                                <Section class="col-md-12">
                                     <label htmlFor="nname" className="small">University</label><span className="redx"> *</span>
                                     <input type="text" className="form-control" id="nname" name="name" value={this.state.modalAddEduForm.name} onChange={this.handleChange} />
                                 </Section>
                             </Section>
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-6"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-6">
                                     <label htmlFor="ncourse" className="small">Course</label><span className="redx"> *</span>
                                     <input type="text" className="form-control" id="ncourse" name="course" value={this.state.modalAddEduForm.course} onChange={this.handleChange} />
                                 </Section>
@@ -593,13 +684,13 @@ class Profile extends Component {
                                     <input type="text" className="form-control" id="ndegree" name="degree" value={this.state.modalAddEduForm.degree} onChange={this.handleChange} />
                                 </Section>
                             </Section>
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-6"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-6">
                                     <label htmlFor="nefrom" className="small">From</label><span className="redx"> *</span>
                                     <input type="date" id="nefrom" name="from" className="form-control" value={this.state.modalAddEduForm.from} onChange={this.handleChange}/>
                                 </Section>
 
-                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                <Section class="col-md-6" stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
                                     <label htmlFor="neto" className="small">To</label><span className="redx"> *</span>
                                     <input type="date" name="to" id="neto" className="form-control" value={this.state.modalAddEduForm.to} onChange={this.handleChange}/>
                                 </Section>
@@ -608,14 +699,14 @@ class Profile extends Component {
 
 
                         <Modal id='editEducation' title="Edit Education" handleClick={this.editEducation} btnname='Save'>
-                            <Section class={"form-row"}>
-                                <Section class={"col-md-12"}>
+                            <Section class="form-row">
+                                <Section class="col-md-12">
                                     <label htmlFor="ename" className="small">University</label><span className="redx"> *</span>
                                     <input type="text" className="form-control" id="ename" name="name" value={this.state.modalEditEduForm.name} onChange={this.handleChange2} />
                                 </Section>
                             </Section>
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-6"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-6">
                                     <label htmlFor="ecourse" className="small">Course</label><span className="redx"> *</span>
                                     <input type="text" className="form-control" id="ecourse" name="course" value={this.state.modalEditEduForm.course} onChange={this.handleChange2} />
                                 </Section>
@@ -624,20 +715,20 @@ class Profile extends Component {
                                     <input type="text" className="form-control" id="edegree" name="degree" value={this.state.modalEditEduForm.degree} onChange={this.handleChange2} />
                                 </Section>
                             </Section>
-                            <Section class={"form-row mt-2"}>
-                                <Section class={"col-md-6"}>
+                            <Section class="form-row mt-2">
+                                <Section class="col-md-6">
                                     <label htmlFor="eefrom" className="small">From</label><span className="redx"> *</span>
                                     <input type="date" id="eefrom" name="from" className="form-control" value={this.state.modalEditEduForm.from} onChange={this.handleChange2}/>
                                 </Section>
 
-                                <Section class={"col-md-6"} stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
+                                <Section class="col-md-6" stylex={{ visibility: (this.state.modalAddExpForm.workhere) ? 'hidden' : 'visible' }}>
                                     <label htmlFor="eeto" className="small">To</label><span className="redx"> *</span>
                                     <input type="date" name="to" id="eeto" className="form-control" value={this.state.modalEditEduForm.to} onChange={this.handleChange2}/>
                                 </Section>
                             </Section>
                         </Modal>
 
-                        <Modal id='delEducation' title="Delete Education" handleClick={this.delEducation} btnname='Delete'>
+                        <Modal id='delEducation' title="Delete Education" handleClick={this.delEducation} btnname='Delete' size='sm'>
                             <p>Sure to delete?</p>
                         </Modal>
                     </Section>
