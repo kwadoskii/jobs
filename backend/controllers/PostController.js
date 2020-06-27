@@ -1,9 +1,14 @@
-const Post = require('../models/post.model')
+const Post = require('../models/post.model');
 
 exports.postList = function (req, res){
     Post.find()
         .then(post => res.json(post))
-        .catch(err => res.status(400).json({err: err}));
+        .catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 };
 
 exports.post = function(req, res){
@@ -15,7 +20,12 @@ exports.post = function(req, res){
             else
                 res.status(400).json({ message: `Post id: ${id} not found` });
         })
-        .catch(err => res.status(400).json({err: err}));
+        .catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 }
 
 exports.postCreate = function(req, res){
@@ -29,7 +39,12 @@ exports.postCreate = function(req, res){
     const post = new Post(postObj);
     post.save()
         .then((post) => res.status(201).json({message: 'Post added', id: post._id}))
-        .catch(err => res.status(400).json({Error: err}));
+        .catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 }
 
 exports.postPatch = function(req, res){
@@ -37,7 +52,12 @@ exports.postPatch = function(req, res){
     Post.findByIdAndUpdate(id, req.body, {new: true})
         .then((post) => {
             res.status(201).json({message: `Post id: ${post._id} updated successfully`});
-        }).catch(err => res.status(400).json({err: err}));
+        }).catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 }
 
 exports.postDelete = function(req, res){
@@ -51,5 +71,10 @@ exports.postDelete = function(req, res){
             else
                 res.status(400).json({ message: `Post id: ${id} not found` });
         })
-        .catch(err => res.status(400).json({ err: err }));    
+        .catch(err => res.status(400).send({
+            status: 'error',
+                data: {
+                    error: err
+                }
+        }));
 }

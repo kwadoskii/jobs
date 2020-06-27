@@ -7,8 +7,25 @@ import avatar from '../images/hotel-direct.png';
 import avatar2 from '../images/wooden-tree.png';
 import Announcement from '../components/Announcement';
 import { getJwt } from '../helper/jwt';
+import Axios from 'axios';
 
 class Application extends Component {
+    constructor(props) {
+        super(props)
+        
+        this.state = {
+            anouncement: ''
+        }
+    }
+
+    componentDidMount() {
+        Axios.get('http://localhost:5000/settings/anouncement/latest')
+            .then(({ data: { data: { anouncement } } }) => {
+                this.setState({ anouncement: anouncement.title });
+            }).catch(err => console.log(err));
+    }
+    
+    
     render() {
         return (
             <div>
@@ -17,7 +34,7 @@ class Application extends Component {
                 </NavBar>
 
                 <Section class='wrapper bg-c'>
-                    <Announcement content="NEW: Now you can easily manage your application attachments! Just open application details and check out all the details there."/>
+                    <Announcement content={`NEW: ${this.state.anouncement}`} />
 
                     <Section class="row radiusx bg-white p-5 shadow-sm mt-3">
                         <Section class="col-md-3">

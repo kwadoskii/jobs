@@ -4,6 +4,7 @@
 /backend/.env
 /backend/server.js
 /backend/package-lock.json
+/backend/uploads
 /package-lock.json
 
 /build

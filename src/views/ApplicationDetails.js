@@ -74,7 +74,7 @@ class ApplicationDetails extends Component {
                                 <Section class="p-4">
                                     <Section>
                                         <h5 className="float-left">Attachment</h5>
-                                        <Link to='/application/one' className="float-right">Add</Link>
+                                        <button type="button" className="float-right btn btn-outline-primary">Add</button>
                                     </Section>
                                     <Section class="dropdown-dividerx"></Section>
                                     <Section class="row attachmentHolder mt-2">
@@ -82,7 +82,7 @@ class ApplicationDetails extends Component {
                                             <Section class="attachment">Gabriel's Resume WO 20_APR_20.pdf</Section>
                                         </Section>
                                         <Section class="col-4">
-                                            <Section class="btn"><Link href="#">Delete</Link></Section>
+                                            <Section class="btn"><Link to="">Delete</Link></Section>
                                         </Section>
                                     </Section>
                                     <Section class="row attachmentHolder mt-2">
@@ -90,7 +90,7 @@ class ApplicationDetails extends Component {
                                             <Section class="attachment">Gabriel's Resume WO 20_APR_20.pdf</Section>
                                         </Section>
                                         <Section class="col-4">
-                                            <Section class="btn"><Link href="#">Delete</Link></Section>
+                                            <Section class="btn"><Link to="">Delete</Link></Section>
                                         </Section>
                                     </Section>
                                 </Section>
@@ -152,7 +152,7 @@ class ApplicationDetails extends Component {
 
                         <Section class="footer mt-2">
                             <Section class="center">
-                                <p className="text-center m-0 text-reset"><small>SMARTRECRUITERS <Link to='/applications/one' class="text-reset">PRIVACY POLICY</Link>  AND <Link to='/applications/one' className="text-reset">TERMS OF USE</Link></small></p>
+                                <p className="text-center m-0 text-reset"><small>SMARTRECRUITERS <Link to='/applications/one' className="text-reset">PRIVACY POLICY</Link>  AND <Link to='/applications/one' className="text-reset">TERMS OF USE</Link></small></p>
                                 <p className="text-center m-0"><small>No longer interested in being considered? <Link to='/applications/one' className="text-reset">View options</Link></small></p>
                             </Section>
                         </Section>
