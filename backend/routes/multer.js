@@ -1,18 +1,16 @@
 const multer = require('multer');
+const crypto = require('crypto');
 
-var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, `./uploads`);
-    },
+const storage = path => multer.diskStorage({
+    destination: `./uploads/${path}`,
     filename: (req, file, cb) => {
-        // cb(null, file.originalname);
-        cb(null, file.fieldname + '-' + Date.now());
+        cb(null, crypto.randomBytes(16).toString('hex') + '.' + file.mimetype.substring(file.mimetype.length - 3, file.mimetype.length));
     }
 });
 
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg') {
-        cb(null, true); //accept file 
+        cb(null, true); //accept file conditions
     }
     else {
         cb(new Error('Invalid Format'), false); //reject
@@ -21,19 +19,10 @@ const fileFilter = (req, file, cb) => {
 
 exports.upload = (path) => {
     return multer({ 
-        // storage: multer.diskStorage({
-        //     destination: (req, file, cb) => {
-        //         cb(null, `./uploads`);
-        //     },
-        //     filename: (req, file, cb) => {
-        //         // cb(null, file.originalname);
-        //         cb(null,  Date.now() + '-' + file.originalname);
-        //     }
-        // }), 
-        // limits : {
-        //     fileSize: 1024 * 1024 * 5
-        // },
-        // fileFilter: fileFilter,
-    dest: `./uploads/${path}`,
+        storage: storage(path),
+        fileFilter: fileFilter, 
+        limits : {
+            fileSize: 1024 * 1024 * 3 //max image size of 3mb
+        }
     });
 };

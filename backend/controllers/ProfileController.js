@@ -10,9 +10,7 @@ exports.getProfile = function (req, res){
             });
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));    
 }
 
@@ -27,9 +25,7 @@ exports.addProfile = function(req, res){
             res.send(profile);
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));    
 }
 
@@ -42,9 +38,7 @@ exports.editProfile = function (req, res){
             });
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));   
 }
 
@@ -56,8 +50,6 @@ exports.downloadProfile = function (req, res){
             });
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));    
 }

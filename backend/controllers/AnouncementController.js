@@ -8,9 +8,7 @@ exports.all = (req, res) =>{
         }))
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -18,14 +16,11 @@ exports.getLatest = function (req, res){
     Anouncement.findOne().sort({ 'createdAt': -1 }).select('title')
         .then(anouncement => res.status(200).send({
             status: 'success',
-            data: {
-                anouncement
-            }}))
+            data: { anouncement }
+        }))
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 };
 
@@ -44,9 +39,7 @@ exports.add = function (req, res) {
         }))
         .catch(err => res.status(400).send({
             status: 'error',
-            data: {
-                error: err
-            }
+            data: { error: err }
         }));
 };
 
@@ -62,9 +55,7 @@ exports.edit = (req, res) => {
             });
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -79,8 +70,6 @@ exports.delete = (req, res) => {
             });
         }).catch(err => res.status(400).send({
             status: 'error',
-            data: {
-                error: err
-            }
+            data: { error: err }
         }));
 }

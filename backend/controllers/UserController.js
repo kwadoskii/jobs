@@ -7,9 +7,7 @@ exports.userList = function (req, res) {
         .then(user => res.json(user))
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 };
 
@@ -23,9 +21,7 @@ exports.user = function (req, res) {
                 res.status(400).json({ message: `User id: ${id} not found` });
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -53,16 +49,12 @@ exports.changePW = function (req, res) {
                     .then(user => res.status(201).send({ status: 'success', data: { message: 'Updated successfully' } }))
                     .catch(err => res.status(400).send({
                         status: 'error',
-                        data: {
-                            error: err
-                        }
+                        data: { error: err }
                     }));
         }})
         .catch(err => res.status(400).send({
             status: 'error',
-            data: {
-                error: err
-            }
+            data: { error: err }
         }));    
 }
 
@@ -75,9 +67,7 @@ exports.userDelete = function (req, res) {
                     .then((user) => res.status(201).json({ message: `User id: ${user._id} deleted` }))
                     .catch(err => res.status(400).send({
                         status: 'error',
-                            data: {
-                                error: err
-                            }
+                        data: { error: err }
                     }));
             }
             else
@@ -85,9 +75,7 @@ exports.userDelete = function (req, res) {
         })
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -152,17 +140,13 @@ exports.userSignUp = function (req, res) {
                 }).catch(err => {
                     res.status(400).send({
                         status: 'error',
-                        data: {
-                            error: err
-                        }
+                        data: { error: err }
                     });
                 });
         }).catch(err => {
             res.status(400).send({
                 status: 'error',
-                data: {
-                    error: err
-                }
+                data: { error: err }
             });
         });
 }

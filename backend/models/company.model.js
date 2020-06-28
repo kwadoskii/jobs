@@ -8,12 +8,15 @@ const companySchema = new Schema({
         country: { type: String, required: true }
     },
     description: { type: String, required: true },
-    logo: { data: Buffer, contentType: String }
+    logo: { data: Buffer, contentType: String },
+    category: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Category'
+    },
 },
 {
     timestamps: true,
 });
 
 const Company = mongoose.model("Company", companySchema);
-
 module.exports = Company;

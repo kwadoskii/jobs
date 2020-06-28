@@ -7,6 +7,7 @@ const profileRouter =   require('./profile');
 const auth =            require('./auth');
 const anouncementRouter =     require('./anouncement');
 const companyRouter =     require('./company');
+const categoryRouter =     require('./category');
 const verify =          require('./verify'); //for auth
 const upload = require('../routes/multer').upload('company');
 
@@ -17,7 +18,7 @@ router.use('/auth', auth);
 router.use('/users', verify, userRouter);
 router.use('/posts', verify, postRouter);
 router.use('/profile', verify, profileRouter);
-router.use('/settings', upload.single('logo'), [anouncementRouter, companyRouter]);
+router.use('/settings', upload.single('logo'), [anouncementRouter, companyRouter, categoryRouter]);
 
 router.use(function(req, res){
     res.status(400).send({

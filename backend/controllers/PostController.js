@@ -5,9 +5,7 @@ exports.postList = function (req, res){
         .then(post => res.json(post))
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 };
 
@@ -22,9 +20,7 @@ exports.post = function(req, res){
         })
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -41,9 +37,7 @@ exports.postCreate = function(req, res){
         .then((post) => res.status(201).json({message: 'Post added', id: post._id}))
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -54,9 +48,7 @@ exports.postPatch = function(req, res){
             res.status(201).json({message: `Post id: ${post._id} updated successfully`});
         }).catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
 
@@ -73,8 +65,6 @@ exports.postDelete = function(req, res){
         })
         .catch(err => res.status(400).send({
             status: 'error',
-                data: {
-                    error: err
-                }
+            data: { error: err }
         }));
 }
