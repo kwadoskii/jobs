@@ -1,5 +1,6 @@
 const Company = require('../models/company.model');
 const Category = require('../models/category.model');
+const Vacancy = require('../models/vacancy.model');
 const fs = require('fs');
 
 exports.allCompanies = (req, res) => {
@@ -140,7 +141,7 @@ exports.getOneCategory = (req, res) => {
 
 exports.addCategory = (req, res) => {
     const { name } = req.body;
-    category = new Category({ name });
+    const category = new Category({ name });
 
     category.save()
         .then(category => {
@@ -163,7 +164,7 @@ exports.editCategory = (req, res) => {
     
     Category.findById(id)
         .then(category => {
-            if (!category) res.status(400).send({ status: 'error', data: { message: 'Categoty not found' } });
+            if (!category) res.status(400).send({ status: 'error', data: { message: 'Category not found' } });
             Category.findByIdAndUpdate(id, { name }, { new: true })
                 .then(category => {
                     res.status(201).send({
@@ -190,7 +191,7 @@ exports.deleteCategory = (req, res) => {
 
     Category.findById(id)
         .then(category => {
-            if (!category) res.status(400).send({ status: 'error', data: { message: 'Categoty not found' } });
+            if (!category) res.status(400).send({ status: 'error', data: { message: 'Category not found' } });
             Category.findByIdAndDelete(id)
                 .then(() => {
                     res.status(201).send({
@@ -199,6 +200,112 @@ exports.deleteCategory = (req, res) => {
                             message: 'Category Deleted successfully'
                         }
                     })
+                })
+                .catch(err => res.status(400).send({
+                    status: 'error',
+                    data: { error: err }
+                }));
+        })
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: { error: err }
+        }));
+}
+
+//Vacancy APIs
+const companyFields = ['name', 'address', 'description', 'logo', 'category'];
+exports.allVacancies = (req, res) => {
+    Vacancy.find().populate('company', companyFields)
+        .then(vacancies => {
+            res.status(200).send({
+                status: 'success',
+                data: vacancies
+            });
+        })
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: { error: err }
+        }));
+}
+
+exports.getOneVacancy = (req, res) => {
+    const { id } = req.params;
+    Vacancy.findOne({ _id: id }).populate([{ path: 'company', select: companyFields, populate: { path: 'category', select: 'name'} }])
+        .then(vacancy => {
+            if(!vacancy) res.status(400).send({ status: 'error', data: { message: 'Vacancy not found' } });
+            res.status(200).send({
+                status: 'success',
+                data: vacancy
+            });
+        })
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: { error: err }
+        }));
+}
+
+exports.addVacancy = (req, res) => {
+    const { title, description, requirement, salary, deadline, minyear, company } = req.body;
+    const vacancy = new Vacancy({ title, description, requirement, salary, deadline, minyear, company });
+
+    vacancy.save()
+        .then(category => {
+            res.status(200).send({
+                status: 'success',
+                data: {
+                    message: 'Category added successfully'
+                }
+            });
+        })
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: { error: err }
+        }));
+}
+
+exports.editVacancy = (req, res) => {
+    const { body } = req;
+    const { id } = req.params;
+
+    Vacancy.findById(id)
+        .then(vacancy => {
+            if (!vacancy) res.status(400).send({ status: 'error', data: { message: 'Vacancy not found' } });
+            Vacancy.findByIdAndUpdate(id, { ...body }, { new: true })
+                .then(vacancy => {
+                    res.status(201).send({
+                        status: 'success',
+                        data: {
+                            message: 'Vacancy Updated successfully',
+                            id: vacancy._id
+                        }
+                    });
+                })
+                .catch(err => res.status(400).send({
+                    status: 'error',
+                    data: { error: err }
+                }));
+            // res.send(body)
+        })
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: { error: err }
+        }));
+}
+
+exports.deleteVacancy = (req, res) => {
+    const { id } = req.params;
+
+    Vacancy.findById(id)
+        .then(vacancy => {
+            if (!vacancy) res.status(400).send({ status: 'error', data: { message: 'Vacancy not found' } });
+            Vacancy.findByIdAndDelete(id)
+                .then(() => {
+                    res.status(201).send({
+                        status: 'success',
+                        data: {
+                            message: 'Vacancy Deleted successfully'
+                        }
+                    });
                 })
                 .catch(err => res.status(400).send({
                     status: 'error',
