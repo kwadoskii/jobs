@@ -1,7 +1,7 @@
 const Application = require('../models/application.model');
 
 exports.allApplications = (req, res) => {
-    Application.find({ 'user': req.auth.user.id }).sort({ 'createdAt': -1 }).populate([{ path: 'vacancy', populate: { path: 'company' } }])
+    Application.find({ 'user': req.auth.user.id }).sort({ 'createdAt': -1 }).populate([{ path: 'vacancy', populate: { path: 'company', populate: { path: 'category' } } }])
         .then(applications => {
             res.status(200).send({
                 status: 'success',
@@ -17,7 +17,7 @@ exports.allApplications = (req, res) => {
 exports.getOneApplication = (req, res) => {
     const { id } = req.params;
 
-    Application.findById(id).populate([{path: 'vacancy', populate: {path: 'company'}}])
+    Application.findById(id).populate([{ path: 'vacancy', populate: { path: 'company', populate: { path: 'category' } } }])
         .then(application => {
             if (!application) res.status(400).send({ status: 'error', data: { message: 'Application not found' } });
             res.status(200).send({
@@ -48,11 +48,33 @@ exports.addApplication = (req, res) => {
                 status: 'error',
                 data: { err }
             }));
+            
         })
 }
 
 exports.editApplication = (req, res) => {
-    res.send('edit one')
+    const { body } = req;
+    const { id } = req.params;
+
+    Application.findById(id)
+        .then(application => {
+            if(!application) res.status(400).send({ status: 'error', data: { message: 'Application not found' } });
+            Application.findByIdAndUpdate(id, { ...body }, { new: true })
+                .then(()=> {
+                    res.status(201).send({
+                        status: 'success',
+                        data: { message: 'Application updated ssuccessfully' }
+                    })
+                })
+                .catch(err => res.status(400).send({
+                    status: 'error',
+                    data: { err }
+                }));
+        })
+        .catch(err => res.status(400).send({
+            status: 'error',
+            data: { err }
+        }));
 }
 
 exports.deleteApplication = (req, res) => {

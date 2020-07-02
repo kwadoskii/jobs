@@ -36,9 +36,11 @@ exports.getOneCompany = (req, res) => {
 exports.addCompany = (req, res) => {
     const { name, state, country, description, category } = req.body; //use enctype="multipart/form-data" in form frontend
     const address = { state, country };
-    const { path, mimetype } = req.file;
-    const logo = { data: fs.readFileSync(path), contentType: mimetype };
-    const company = new Company({ name, address, description, logo, category });
+    const { path, mimetype, destination, filename } = req.file;
+    // console.log(req.file)
+    const logo = { data: fs.readFileSync(path, 'utf8'), contentType: mimetype };
+    const logolink = destination+'/'+filename;
+    const company = new Company({ name, address, description, category, logolink });
 
     company.save()
         .then(company => {

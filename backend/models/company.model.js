@@ -9,6 +9,7 @@ const companySchema = new Schema({
     },
     description: { type: String, required: true },
     logo: { data: Buffer, contentType: String },
+    logolink: { type: String },
     category: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Category'

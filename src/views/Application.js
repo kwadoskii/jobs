@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import NavBar from '../components/Navbar';
 import NavBarMenu from '../components/NavbarMenu';
 import Section from '../components/Section';
-import avatar from '../images/hotel-direct.png';
-import avatar2 from '../images/wooden-tree.png';
 import Announcement from '../components/Announcement';
 import { getJwt } from '../helper/jwt';
 import Axios from 'axios';
+import ApplicationC from '../components/Application';
 
 class Application extends Component {
     constructor(props) {
         super(props)
         
         this.state = {
-            anouncement: ''
+            anouncement: '',
+            application: []
         }
     }
 
@@ -22,7 +21,37 @@ class Application extends Component {
         Axios.get('http://localhost:5000/settings/anouncement/latest')
             .then(({ data: { data: { anouncement } } }) => {
                 this.setState({ anouncement: anouncement.title });
-            }).catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
+
+        Axios.get('http://localhost:5000/users/application', { headers: { 'auth-token': getJwt() } })
+            .then(({ data: { data } }) => {
+                this.setState({ application: data });
+                console.log(this.state.application);
+            })
+            .catch(err => console.log(err));
+    }
+
+    ApplicationList () {
+        const { application } = this.state;
+
+        if (application.length > 0) {
+            return application.map((application) => {
+                console.log(application.vacancy.company.logo.data.data.map(e => {return e}).join('').toString('base64'))
+                return (
+                    <ApplicationC
+                        title={application.vacancy.title}
+                        companyName={application.vacancy.company.name}
+                        state={application.vacancy.company.address.state}
+                        country={application.vacancy.company.address.country}
+                        status={application.status}
+                        companyImg={application.vacancy.company.logolink}
+                        id={application._id}
+                        key={application._id}
+                    />)
+            });
+        }
+
     }
     
     
@@ -36,7 +65,7 @@ class Application extends Component {
                 <Section class='wrapper bg-c'>
                     <Announcement content={`NEW: ${this.state.anouncement}`} />
 
-                    <Section class="row radiusx bg-white p-5 shadow-sm mt-3">
+                    {/* <Section class="row radiusx bg-white p-5 shadow-sm mt-3">
                         <Section class="col-md-3">
                             <Section class="col-md-12">
                                 <Section class="logosizex"
@@ -54,27 +83,9 @@ class Application extends Component {
                         <Section class="col-md-4">
                             <p>In review</p>
                         </Section>
-                    </Section>
+                    </Section> */}
 
-                    <Section class="row radiusx bg-white p-5 shadow-sm mt-3">
-                        <Section class="col-md-3">
-                            <Section class="col-md-12">
-                                <Section class="logosizex"
-                                    stylex={{backgroundImage: `url(${avatar2})`}}>
-                                </Section>
-                            </Section>
-                        </Section>
-
-                        <Section class="col-md-5">
-                            <Link to="/applications/twoid" className="text-reset"><h5 className="font-weight-bold">PHP Engineer (Senior and Intermediate)</h5></Link>
-                            <p className="font-weight-thin">Wooden Trees</p>
-                            <p className="font-weight-thin">Lagos, Nigeria</p>
-                        </Section>
-
-                        <Section class="col-md-4">
-                            <p>New</p>
-                        </Section>
-                    </Section>
+                    {this.ApplicationList()}
 
                     <p className="mt-3 mb-1 p-0">Powered by</p>
                     <p className="mt-0"><span className="font-weight-bold">Smart</span> Recruiters</p>

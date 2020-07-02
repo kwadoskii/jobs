@@ -4,14 +4,46 @@ import Navbar from '../components/Navbar'
 import NavbarMenu from '../components/NavbarMenu'
 import Section from '../components/Section'
 import avatar from '../images/avatar.png';
-import logo from '../images/hotel-direct.png';
 import thumb from '../images/thumb.png';
+import { getJwt} from '../helper/jwt';
+import Axios from 'axios';
 
 class ApplicationDetails extends Component {
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            application: {
+                vacancy: {
+                    company: {
+                        address: {
+                            state: '',
+                            country: ''
+                        },
+                        name: '',
+                        logolink: '',
+                        description: '',
+                    },
+                    title: ''
+                }
+            }
+        }
+    }
+
+    componentDidMount() {
+        Axios.get('http://localhost:5000/users/application/' + this.props.match.params.id, { headers: { 'auth-token': getJwt() } })
+            .then(({data}) => {
+                this.setState({ application: data.data })
+                console.log(this.state.application)
+            })
+            .catch(err => console.log(err));
+    }
+    
+    
     render() {
         return (
             <div>
-                <Navbar class={"navbar navbar-dark fixed-top pt-2 pb-2 pl-4 pr-4"} stylex={{ backgroundColor: 'rgba(0,0,0, 0.4)' }} imgSize={"35px"} url='/applications/one'>
+                <Navbar class={"navbar navbar-dark fixed-top pt-2 pb-2 pl-4 pr-4"} stylex={{ backgroundColor: 'rgba(0,0,0, 0.4)' }} imgSize={"35px"}>
                     <NavbarMenu />
                 </Navbar>
 
@@ -23,15 +55,15 @@ class ApplicationDetails extends Component {
                                     <Section class="row">
                                         <Section class="col-4">
                                             <Section class="col-12 logosizex"
-                                                stylex={{ backgroundImage: `url(${logo})` }}>
+                                                stylex={{ backgroundImage: `url(http://localhost:5000/${this.state.application.vacancy.company.logolink})` }}>
                                             </Section>
                                         </Section>
 
                                         <Section class="col-8">
                                             <Link to="/jobDetails">
-                                                <h4>PHP Engineer (Senior and Intermediate)</h4>
+                                                <h4>{this.state.application.vacancy.title}</h4>
                                             </Link>
-                                            <p>Hotel Direct - Lagos, Nigeria</p>
+                                            <p>{`${this.state.application.vacancy.company.name} - ${this.state.application.vacancy.company.address.state}, ${this.state.application.vacancy.company.address.country}`}</p>
                                         </Section>
                                     </Section>
                                 </Section>
@@ -47,27 +79,8 @@ class ApplicationDetails extends Component {
                                 <Section class="p-4">
                                     <h5 className="pb-4">Company Description</h5>
                                     <p className="companyDesc">
-                                        Our partner Axxess, is the fastest growing home health technology company in USA. At Axxess,
-                                        we do
-                                        business differently, by empowering you to build the technology to create mind-blowing,
-                                        first-to-market, superior products - leading healthcare into the future. We build the best
-                                        because
-                                        we only hire the best.
+                                        {this.state.application.vacancy.company.description}
                                     </p>
-
-                                    <p>
-                                        We are an open, agile environment, where transparent conversation ignites collaboration with
-                                        a team
-                                        of great thinkers. Everyone freely contributes, ideas override egos, and the best idea
-                                        always wins.
-                                        We embrace new technologies and pride ourselves on sustainable and quality code. In our
-                                        world,
-                                        opportunity paired with imagination is limitless and we build what others can only hope to
-                                        dream.
-                                        We’ve created an atmosphere allowing you to produce your best work, by catering to the
-                                        creative.
-                                    </p>
-                                    <p>This is a full-time, salaried role, based in our Lagos, Nigeria office.</p>
                                 </Section>
                             </Section>
                             <Section class="m-2 fill radiusx bg-white shadow-sm">
@@ -146,7 +159,7 @@ class ApplicationDetails extends Component {
                         <Section class="row mt-4">
                             <Section class="col-md-12 radiusx bg-white p-4 shadow-sm">
                                 <img src={thumb} alt="interest" />
-                                <span className="pl-4">You expressed interest in <Link to="/applications/one">PHP Engineer (Senior and Intermediate)</Link>.</span>
+                                <span className="pl-4">You expressed interest in <Link to="/jobDetails">{this.state.application.vacancy.title}</Link>.</span>
                             </Section>
                         </Section>
 
