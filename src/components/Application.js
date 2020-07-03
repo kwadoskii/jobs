@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Section from './Section';
-import fs from 'fs';
 
 const Application = (props) => {
     const img = props.companyImg ? props.companyImg : "ddd";
@@ -23,7 +22,8 @@ const Application = (props) => {
             </Section>
 
             <Section class="col-md-4">
-                <p>{props.status}</p>
+                <span className="badge badge-success p-2 pl-3 pr-3">{props.status}</span>
+                
             </Section>
         </Section>
     );

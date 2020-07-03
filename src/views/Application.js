@@ -27,7 +27,6 @@ class Application extends Component {
         Axios.get('http://localhost:5000/users/application', { headers: { 'auth-token': getJwt() } })
             .then(({ data: { data } }) => {
                 this.setState({ application: data });
-                console.log(this.state.application);
             })
             .catch(err => console.log(err));
     }
@@ -37,7 +36,7 @@ class Application extends Component {
 
         if (application.length > 0) {
             return application.map((application) => {
-                console.log(application.vacancy.company.logo.data.data.map(e => {return e}).join('').toString('base64'))
+                // console.log(application.vacancy.company.logo.data.data.map(e => {return e}).join('').toString('base64'))
                 return (
                     <ApplicationC
                         title={application.vacancy.title}
@@ -51,7 +50,6 @@ class Application extends Component {
                     />)
             });
         }
-
     }
     
     
@@ -64,26 +62,6 @@ class Application extends Component {
 
                 <Section class='wrapper bg-c'>
                     <Announcement content={`NEW: ${this.state.anouncement}`} />
-
-                    {/* <Section class="row radiusx bg-white p-5 shadow-sm mt-3">
-                        <Section class="col-md-3">
-                            <Section class="col-md-12">
-                                <Section class="logosizex"
-                                    stylex={{backgroundImage: `url(${avatar})`}}>
-                                </Section>
-                            </Section>
-                        </Section>
-
-                        <Section class="col-md-5">
-                            <Link to="/applications/oneid" className="text-reset"><h5 className="font-weight-bold">Hospitality Manager</h5></Link>
-                            <p className="font-weight-thin">Hotel Direct</p>
-                            <p className="font-weight-thin">Lagos, Nigeria</p>
-                        </Section>
-
-                        <Section class="col-md-4">
-                            <p>In review</p>
-                        </Section>
-                    </Section> */}
 
                     {this.ApplicationList()}
 

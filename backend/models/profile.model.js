@@ -17,6 +17,7 @@ const profileSchema = new Schema({
         country: { type: String, trim: true }
     },
     phone: { type:  String , trim: true },
+    coverletter: { type: String, trim: true },
     experience: [{
         title: { type: String, trim: true , required: "title is required" },
         company: { type: String, trim: true , required: 'company is required' },

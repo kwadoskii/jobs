@@ -15,9 +15,9 @@ exports.getProfile = function (req, res){
 }
 
 exports.addProfile = function(req, res){
-    const { name, phone, address, experience, education } = req.body;
+    const { name, phone, address, experience, education, coverletter } = req.body;
     
-    profile = new Profile({ name, phone, address, experience, education });
+    profile = new Profile({ name, phone, address, experience, education, coverletter });
     profile.user = req.auth.user.id;
 
     profile.save()
@@ -30,13 +30,23 @@ exports.addProfile = function(req, res){
 }
 
 exports.editProfile = function (req, res){    
-    Profile.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true }).populate('user', 'email')
+    const { id } = req.params;
+    Profile.findById(id)
         .then(profile => {
-            res.status(200).send({
-                status: 'success',
-                data: profile
-            });
-        }).catch(err => res.status(400).send({
+            if (!profile) res.status(400).send({ status: 'error', data: { message: 'Profile not found' } });
+            Profile.findByIdAndUpdate(id, req.body, { new: true }).populate('user', 'email')
+                .then(profile => {
+                    res.status(200).send({
+                        status: 'success',
+                        data: profile
+                    });
+                })
+                .catch(err => res.status(400).send({
+                    status: 'error',
+                    data: { error: err }
+                }));   
+        })
+        .catch(err => res.status(400).send({
             status: 'error',
             data: { error: err }
         }));   
@@ -52,4 +62,22 @@ exports.downloadProfile = function (req, res){
             status: 'error',
             data: { error: err }
         }));    
+}
+
+exports.getProfileByUser = function (req, res) {
+    const {id} = req.params;
+
+    Profile.findOne({user: id})
+        .then(profile => {
+            res.status(200).send({
+                status: 'success',
+                data: profile
+            });
+        })
+        .catch(err => {
+            res.status(400).send({
+                status:'error',
+                data: { error: err }
+            })
+        })
 }

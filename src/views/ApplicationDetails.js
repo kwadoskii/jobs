@@ -11,7 +11,7 @@ import Axios from 'axios';
 class ApplicationDetails extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             application: {
                 vacancy: {
@@ -26,6 +26,13 @@ class ApplicationDetails extends Component {
                     },
                     title: ''
                 }
+            },
+            profile: {
+                name: {
+                    firstname: '',
+                    lastname: ''
+                },
+                coverLetter: ''
             }
         }
     }
@@ -34,10 +41,24 @@ class ApplicationDetails extends Component {
         Axios.get('http://localhost:5000/users/application/' + this.props.match.params.id, { headers: { 'auth-token': getJwt() } })
             .then(({data}) => {
                 this.setState({ application: data.data })
-                console.log(this.state.application)
+                Axios.get('http://localhost:5000/profile/' + data.data.user, { headers: { 'auth-token': getJwt() } })
+                    .then(({ data: { data } }) => {
+                        this.setState(prevState => ({
+                            ...prevState,
+                            profile: {
+                                ...prevState.profile,
+                                name: {
+                                    ...prevState.profile.name,
+                                    firstname: data.name.firstname,
+                                    lastname: data.name.lastname
+                                },
+                                coverLetter: data.coverletter
+                            }}));
+                    })
+                    .catch(err => console.log(err));
             })
-            .catch(err => console.log(err));
-    }
+            .catch(err => console.log(err));        
+    }   
     
     
     render() {
@@ -115,42 +136,17 @@ class ApplicationDetails extends Component {
                                 <Section class="imageholder">
                                     <Section class="float-left">
                                         <img src={avatar} alt="avatar" className="rounded-circle" width="35px" height="35px" />
-                                        <strong className="pl-2">Gabriel Abonga</strong>
+                                        <strong className="pl-2">{`${this.state.profile.name.firstname} ${this.state.profile.name.lastname}`}</strong>
                                     </Section>
                                     <Section class="float-right">
-                                        <p>20 Apr 2020</p>
+                                        <p>{`{20 Apr 2020}`}</p>
                                     </Section>
                                 </Section>
 
                                 <Section class="dropdown-dividerx"></Section>
 
                                 <Section class="coverLetter">
-                                    <p>
-                                        My name is Gabriel Abonga, a graduate of the University of Nigeria, Nsukka, with
-                                        Second Class Honors Upper Division in Electronic Engineering.
-                                    </p>
-
-                                    <p>
-                                        I wish to apply for the position of PHP Engineer currently being advertised in your firm. I
-                                        believe the knowledge I have acquired through my course work and the skills I picked up over
-                                        my course of working in the Information Technology industry makes me an ideal candidate for
-                                        this opening.
-                                    </p>
-
-                                    <p>
-                                        I am interested in this position as it appeals directly to my passion for working in a
-                                        fast-paced information technology environment. As a developer this role appears directly to
-                                        me, I equally write PHP, HTML, CSS, SCSS, Javascript, React, SQL, NO-SQL and JQuery.
-                                    </p>
-
-                                    <p>
-                                        In addition to my degree qualification, I also took a course towards public management where
-                                        I got a certification from the Chartered Institute of Public Managers of Nigeria.
-                                    </p>
-
-                                    <p>
-                                        Thank you for I believe you would acknowledge my request.
-                                    </p>
+                                    {this.state.profile.coverLetter}
                                 </Section>
 
                             </Section>
@@ -165,8 +161,8 @@ class ApplicationDetails extends Component {
 
                         <Section class="footer mt-2">
                             <Section class="center">
-                                <p className="text-center m-0 text-reset"><small>SMARTRECRUITERS <Link to='/applications/one' className="text-reset">PRIVACY POLICY</Link>  AND <Link to='/applications/one' className="text-reset">TERMS OF USE</Link></small></p>
-                                <p className="text-center m-0"><small>No longer interested in being considered? <Link to='/applications/one' className="text-reset">View options</Link></small></p>
+                                <p className="text-center m-0 text-reset"><small>SMARTRECRUITERS <Link to='/applications' className="text-reset">PRIVACY POLICY</Link>  AND <Link to='/applications' className="text-reset">TERMS OF USE</Link></small></p>
+                                <p className="text-center m-0"><small>No longer interested in being considered? <Link to='/applications' className="text-reset">View options</Link></small></p>
                             </Section>
                         </Section>
                     </Section>

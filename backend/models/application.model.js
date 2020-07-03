@@ -4,7 +4,10 @@ const Schema = mongoose.Schema;
 const applicationSchema = new Schema({
     vacancy: { type: Schema.Types.ObjectId, ref: 'Vacancy' },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
-    status: { type: String, default: 'New' }
+    status: { type: String, default: 'New' },
+    attachments: [
+        { doctype: { type: String }, path: { type: String } }
+    ]
 },
     { timestamps: true }
 );
