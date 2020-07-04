@@ -3,7 +3,7 @@ import NavBar from '../components/Navbar';
 import NavBarMenu from '../components/NavbarMenu';
 import Section from '../components/Section';
 import Announcement from '../components/Announcement';
-import { getJwt } from '../helper/jwt';
+import { host, headers } from '../helper/config';
 import Axios from 'axios';
 import ApplicationC from '../components/Application';
 
@@ -18,13 +18,13 @@ class Application extends Component {
     }
 
     componentDidMount() {
-        Axios.get('http://localhost:5000/settings/anouncement/latest')
+        Axios.get(host + '/settings/anouncement/latest')
             .then(({ data: { data: { anouncement } } }) => {
                 this.setState({ anouncement: anouncement.title });
             })
             .catch(err => console.log(err));
 
-        Axios.get('http://localhost:5000/users/application', { headers: { 'auth-token': getJwt() } })
+        Axios.get(host + '/users/application', headers)
             .then(({ data: { data } }) => {
                 this.setState({ application: data });
             })

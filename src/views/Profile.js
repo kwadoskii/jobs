@@ -7,7 +7,7 @@ import avatar                   from '../images/avatar.png';
 import Modal                    from '../components/Modal';
 import Experience               from '../components/Experience';
 import $                        from 'jquery';
-import { getJwt }               from '../helper/jwt';
+import { host, headers }                 from '../helper/config';
 import Education                from '../components/Education';
 
 
@@ -84,11 +84,7 @@ class Profile extends Component {
     }
 
     async componentDidMount() {
-        await axios.get('http://localhost:5000/profile', {
-            headers: {
-                'auth-token': getJwt()
-            }
-        })
+        await axios.get(host + '/profile', headers)
             .then(({ data }) => {
                 this.setState(prevState => ({
                     ...prevState,
@@ -145,7 +141,7 @@ class Profile extends Component {
         const { phone, country, state } = this.state.modalEditProfileForm;
         const address = { country, state };
 
-        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { phone, address }, { headers: { 'auth-token': getJwt() } })
+        axios.patch(host + '/profile/' + this.state.user._id, { phone, address }, headers)
             .then(({ data : { data } }) => {
                 this.setState(prevState => ({
                     ...prevState,
@@ -261,7 +257,8 @@ class Profile extends Component {
         });
     }    
 
-    async delExperience(){
+    async delExperience(e){
+        e.preventDefault();
         let id = this.state.dataid;
         let user = this.state.user;
         if(user){
@@ -269,37 +266,33 @@ class Profile extends Component {
                 return e._id !== id;
             });
 
-            this.setState({ user: user});
             const { experience } = this.state.user;
-            axios.patch('http://localhost:5000/profile/' + this.state.user._id, { experience }, {
-                headers: {
-                    'auth-token': getJwt()
-                }
-            })
+            axios.patch(host + '/profile/' + this.state.user._id, { experience }, headers)
             .then(async res => {
                 await this.setState({ user: res.data.data, dataid: ''});
                 $('#delExperience').modal('hide');
+                this.setState({ user: user});
             })
             .catch(err => console.log(err));
         }        
     }
 
-    delEducation() {
+    delEducation(e) {
+        e.preventDefault();
         const { dataid, user } = this.state;
         if (user) {
             user.education.school = user.education.school.filter(e => {
                 return e._id !== dataid;
             });
 
-            this.setState({ user: user, dataid: '' });
             const { education } = this.state.user;
 
-            axios.patch('http://127.0.0.1:5000/profile/' + this.state.user._id, { education }, {
-                headers: { 'auth-token': getJwt() }
-            })
+            axios.patch(host + '/profile/' + this.state.user._id, { education }, headers)
                 .then(({ data }) => {
                     this.setState({ user: data.data, dataid: '' });
                     $('#delEducation').modal('hide');
+
+                    this.setState({ user: user, dataid: '' });
                 })
                 .catch(err => console.log(err));
         }
@@ -310,11 +303,7 @@ class Profile extends Component {
         this.state.user.experience.push(this.state.modalAddExpForm);
         const { experience } = this.state.user;
 
-        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { experience }, {
-            headers: {
-                'auth-token': getJwt()
-            }
-        })
+        axios.patch(host + '/profile/' + this.state.user._id, { experience }, headers)
         .then(res => {
             this.setState({ user: res.data.data });
             $('#newExperience').modal('hide');
@@ -323,7 +312,8 @@ class Profile extends Component {
         .catch(err => console.log(err));        
     }
 
-    async editExperience(){
+    async editExperience(e){
+        e.preventDefault();
         const { modalEditExpForm, user, dataid } = this.state;
 
         //replace the edited data
@@ -342,8 +332,7 @@ class Profile extends Component {
 
         const { experience } = this.state.user;
 
-        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { experience: experience }, { 
-            headers: { 'auth-token': getJwt() } })
+        axios.patch(host + '/profile/' + this.state.user._id, { experience: experience }, headers)
             .then(({ data }) => {
                 $('#editExperience').modal('hide');
                 this.setState({dataid: '', user: data.data });
@@ -357,9 +346,7 @@ class Profile extends Component {
         this.state.user.education.school.push(this.state.modalAddEduForm);
         const { education } = this.state.user;
 
-        axios.patch('http://localhost:5000/profile/'+ this.state.user._id, { education }, {
-            headers: { 'auth-token': getJwt() }
-        })
+        axios.patch(host + '/profile/'+ this.state.user._id, { education }, headers)
         .then(({ data }) => {
             this.setState({ user: data.data });
             $('#newEducation').modal('hide');
@@ -376,24 +363,24 @@ class Profile extends Component {
             return obj._id === dataid ? { ...modalEditEduForm, _id: dataid } : obj;
         });
 
-        await this.setState(prevState => ({
-            ...prevState,
-            user: {
-                ...prevState.user,
-                education: {
-                    ...prevState.user.education,
-                    school: editedEdu
-                }
-            }, dataid: ''
-        }));
-
         const { education } = this.state.user;
 
-        axios.patch('http://localhost:5000/profile/' + this.state.user._id, { education: education }, { headers: { 'auth-token': getJwt() } })
-            .then(({ data }) => {
+        axios.patch(host + '/profile/' + this.state.user._id, { education: education }, headers)
+            .then(async ({ data }) => {
                 this.setState({ user: data.data, dataid: '' });
                 this.clearModal();
                 $('#editEducation').modal('hide');
+
+                await this.setState(prevState => ({
+                    ...prevState,
+                    user: {
+                        ...prevState.user,
+                        education: {
+                            ...prevState.user.education,
+                            school: editedEdu
+                        }
+                    }, dataid: ''
+                }));
             })
             .catch(err => console.log(err));
     }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { host } from '../helper/config';
 import { getJwt } from '../helper/jwt';
 import Axios from 'axios';
 
@@ -11,7 +12,6 @@ class Auth extends Component {
             auth: undefined
         };
     }
-    
 
     componentDidMount() {
         const jwt = getJwt();
@@ -19,7 +19,7 @@ class Auth extends Component {
             return this.props.history.push('/');
         if(jwt)
             // console.log(jwt)
-            Axios.get('http://localhost:5000/auth', { headers: { 'auth-token': jwt } })
+            Axios.get(host + '/auth', { headers: { 'auth-token': jwt } })
                 .then(({ data }) => {
                     if (data.status === 'success')
                         this.setState({ auth: data.data.user });
@@ -33,10 +33,7 @@ class Auth extends Component {
 
     render() {
         if (this.state.auth === undefined) {
-            return (
-                <div>
-                </div>
-            );
+            return (<div></div>);
         }
         
         return (

@@ -6,7 +6,7 @@ const applicationSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     status: { type: String, default: 'New' },
     attachments: [
-        { doctype: { type: String }, path: { type: String } }
+        { doctype: { type: String }, path: { type: String }, filename: { type: String } }
     ]
 },
     { timestamps: true }

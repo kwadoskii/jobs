@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom'
 import Section from './Section'
 import Button from './Button'
+import { host } from '../helper/config';
 import Axios from 'axios';
 
 class SiginInput extends Component {
@@ -31,7 +32,7 @@ class SiginInput extends Component {
         e.preventDefault();
         const { email, password } = this.state;
 
-        Axios.post('http://localhost:5000/signin', { email, password })
+        Axios.post(host + '/signin', { email, password })
             .then(({ data }) => {
                 if(data.data.token){
                     localStorage.setItem('auth-token', data.data.token);

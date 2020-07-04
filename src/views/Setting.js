@@ -8,7 +8,7 @@ import lock from '../images/lock.png';
 import globe from '../images/globe.png';
 import upload from '../images/upload.png';
 import idcard from '../images/idcard.png';
-import { getJwt } from '../helper/jwt';
+import { host, headers } from '../helper/config';
 import Axios from 'axios';
 import $ from 'jquery';
 
@@ -47,7 +47,7 @@ class Setting extends Component {
         e.preventDefault();
         
         //export profile to user as a download
-        fetch('http://localhost:5000/profile/download', { headers: { 'auth-token': getJwt() }})
+        fetch(host + '/profile/download', headers)
 			.then(response => {
 				response.blob().then(blob => {
 					let url = window.URL.createObjectURL(blob);
@@ -73,7 +73,7 @@ class Setting extends Component {
         }
         
         e.preventDefault();
-        Axios.patch('http://localhost:5000/users/changepassword', { password, currentp }, { headers: { 'auth-token': getJwt() } })
+        Axios.patch(host + '/users/changepassword', { password, currentp }, headers)
             .then(({ data }) => {
                 this.clearForm();
                 $('#changepassword').modal('hide');

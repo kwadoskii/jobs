@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import Section from './Section';
 import Button from './Button';
 import Axios from 'axios';
-import { getJwt } from '../helper/jwt';
+import { host, headers } from '../helper/config';
 
 
 class SignupInput extends Component {
@@ -37,17 +37,17 @@ class SignupInput extends Component {
 
         if (password === password2) {
             // Sign up new user
-            Axios.post('http://localhost:5000/signup', { email, password })
+            Axios.post(host + '/signup', { email, password })
                 .then(({ data }) => {
                     if (data.status === 'error') {
                         this.setState({ error: data.data.error });
                     }
                     else {
                         // if signup is successful sign the user in                        
-                        Axios.post('http://localhost:5000/signin', { email, password })
+                        Axios.post(host + '/signin', { email, password })
                             .then(({ data }) => {
                                 localStorage.setItem('auth-token', data.data.token);
-                                Axios.post('http://localhost:5000/profile', { name: { firstname, lastname } }, { headers: { 'auth-token': getJwt() } })
+                                Axios.post(host + '/profile', { name: { firstname, lastname } }, headers)
                                     .then(res => {
                                         this.setState({ redirect: true });
                                     })

@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import NavbarMenu from '../components/NavbarMenu';
 import Section from '../components/Section';
 import Banner from '../components/Banner';
-import { getJwt } from '../helper/jwt';
+import { host, headers } from '../helper/config';
 import Tag from '../components/Tag';
 
 class Post extends Component {
@@ -18,12 +18,9 @@ class Post extends Component {
     }
 
     componentDidMount() {
-        const jwt = getJwt();
-        axios.get('http://localhost:5000/posts/' + this.props.match.params.id, { headers: { 'auth-token': jwt } })
-            .then(post => {
-                console.log(post.data);
-                console.log(this.props.match.params.id);
-                this.setState({ post: post.data })
+        axios.get(host + '/posts/' + this.props.match.params.id, headers)
+            .then(({ data: { data} }) => {
+                this.setState({ post: data })
             })
             .catch(err => console.log(err));
     }

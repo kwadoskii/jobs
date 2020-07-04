@@ -2,7 +2,7 @@ const Post = require('../models/post.model');
 
 exports.postList = function (req, res){
     Post.find()
-        .then(post => res.json(post))
+        .then(posts => res.status(200).json({ status: 'success', data: posts }))
         .catch(err => res.status(400).send({
             status: 'error',
             data: { error: err }
@@ -10,13 +10,11 @@ exports.postList = function (req, res){
 };
 
 exports.post = function(req, res){
-    id = req.params.id
+    const { id } = req.params;
     Post.findById(id)
         .then(post => {
-            if(post)
-                res.status(200).json(post);
-            else
-                res.status(400).json({ message: `Post id: ${id} not found` });
+            if(!post) res.status(400).json({ message: `Post id: ${id} not found` });
+            res.status(200).json({ status: 'success', data: post });
         })
         .catch(err => res.status(400).send({
             status: 'error',
@@ -34,18 +32,26 @@ exports.postCreate = function(req, res){
 
     const post = new Post(postObj);
     post.save()
-        .then((post) => res.status(201).json({message: 'Post added', id: post._id}))
+        .then((post) => res.status(201).json({ status: 'success', data: { message: 'Post added', id: post._id } }))
         .catch(err => res.status(400).send({
             status: 'error',
             data: { error: err }
         }));
 }
 
-exports.postPatch = function(req, res){
+exports.postPatch = function (req, res) {
     let id = req.params.id;
-    Post.findByIdAndUpdate(id, req.body, {new: true})
+    Post.findById(id)
         .then((post) => {
-            res.status(201).json({message: `Post id: ${post._id} updated successfully`});
+            if (!post) res.status(400).json({ message: `Post id: ${id} not found` });
+
+            Post.findByIdAndUpdate(id, req.body, { new: true })
+                .then((post) => {
+                    res.status(201).json({ status: 'success', data: { message: `Post id: ${post._id} updated successfully` } });
+                }).catch(err => res.status(400).send({
+                    status: 'error',
+                    data: { error: err }
+                }));
         }).catch(err => res.status(400).send({
             status: 'error',
             data: { error: err }
@@ -56,12 +62,11 @@ exports.postDelete = function(req, res){
     let id = req.params.id;
     Post.findById(id)
         .then((post) => {
-            if(post)
-                Post.findByIdAndDelete(id)
-                    .then((post) => res.status(201).json({message: `Post id: ${post._id} deleted`}))
-                    .catch(err => res.status(400).json({err: err}));
-            else
-                res.status(400).json({ message: `Post id: ${id} not found` });
+            if(!post) res.status(400).json({ message: `Post id: ${id} not found` });
+            
+            Post.findByIdAndDelete(id)
+                .then((post) => res.status(201).json({ message: `Post id: ${post._id} deleted` }))
+                .catch(err => res.status(400).json({err: err}));
         })
         .catch(err => res.status(400).send({
             status: 'error',

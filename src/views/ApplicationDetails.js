@@ -5,8 +5,10 @@ import NavbarMenu from '../components/NavbarMenu'
 import Section from '../components/Section'
 import avatar from '../images/avatar.png';
 import thumb from '../images/thumb.png';
-import { getJwt} from '../helper/jwt';
+import { host, headers } from '../helper/config';
 import Axios from 'axios';
+import Attachments from '../components/Attachment';
+
 
 class ApplicationDetails extends Component {
     constructor(props) {
@@ -25,7 +27,8 @@ class ApplicationDetails extends Component {
                         description: '',
                     },
                     title: ''
-                }
+                },
+                attachments: []
             },
             profile: {
                 name: {
@@ -35,13 +38,15 @@ class ApplicationDetails extends Component {
                 coverLetter: ''
             }
         }
+
+        this.delAttachment = this.delAttachment.bind(this);
     }
 
     componentDidMount() {
-        Axios.get('http://localhost:5000/users/application/' + this.props.match.params.id, { headers: { 'auth-token': getJwt() } })
+        Axios.get(host + '/users/application/' + this.props.match.params.id, headers)
             .then(({data}) => {
                 this.setState({ application: data.data })
-                Axios.get('http://localhost:5000/profile/' + data.data.user, { headers: { 'auth-token': getJwt() } })
+                Axios.get(host + '/profile/' + data.data.user, headers)
                     .then(({ data: { data } }) => {
                         this.setState(prevState => ({
                             ...prevState,
@@ -60,6 +65,42 @@ class ApplicationDetails extends Component {
             .catch(err => console.log(err));        
     }   
     
+    attachmentList(){
+        const {attachments} = this.state.application;
+
+        if(attachments){
+            return attachments.map(attachment => {
+                return (<Attachments
+                            filename= {attachment.filename}
+                            handleOnClick= {this.delAttachment}
+                            id= {attachment._id}
+                            key= {attachment._id} />
+                        )
+            })
+        }
+    }
+
+    delAttachment(e){
+        const id = e.target.dataset['id'];
+        const { attachments } = this.state.application;
+        let newAttachments = '';
+
+        if(attachments){
+            newAttachments = attachments.filter(e => {
+                return e._id !== id;
+            });
+        }
+        this.setState(prevState => ({
+            ...prevState,
+            application: {
+                ...prevState.application,
+                attachments: newAttachments
+            }
+        }));
+        
+        Axios.patch(host + '/users/application/' + this.state.application._id, { attachments: newAttachments }, headers)
+            .then().catch(err => console.log(err));
+    }
     
     render() {
         return (
@@ -76,7 +117,7 @@ class ApplicationDetails extends Component {
                                     <Section class="row">
                                         <Section class="col-4">
                                             <Section class="col-12 logosizex"
-                                                stylex={{ backgroundImage: `url(http://localhost:5000/${this.state.application.vacancy.company.logolink})` }}>
+                                                stylex={{ backgroundImage: `url(${host}/${this.state.application.vacancy.company.logolink})` }}>
                                             </Section>
                                         </Section>
 
@@ -107,26 +148,12 @@ class ApplicationDetails extends Component {
                             <Section class="m-2 fill radiusx bg-white shadow-sm">
                                 <Section class="p-4">
                                     <Section>
-                                        <h5 className="float-left">Attachment</h5>
+                                        <h5 className="float-left">Attachments</h5>
                                         <button type="button" className="float-right btn btn-outline-primary">Add</button>
                                     </Section>
                                     <Section class="dropdown-dividerx"></Section>
-                                    <Section class="row attachmentHolder mt-2">
-                                        <Section class="col-8">
-                                            <Section class="attachment">Gabriel's Resume WO 20_APR_20.pdf</Section>
-                                        </Section>
-                                        <Section class="col-4">
-                                            <Section class="btn"><Link to="">Delete</Link></Section>
-                                        </Section>
-                                    </Section>
-                                    <Section class="row attachmentHolder mt-2">
-                                        <Section class="col-8">
-                                            <Section class="attachment">Gabriel's Resume WO 20_APR_20.pdf</Section>
-                                        </Section>
-                                        <Section class="col-4">
-                                            <Section class="btn"><Link to="">Delete</Link></Section>
-                                        </Section>
-                                    </Section>
+
+                                    {this.attachmentList()}
                                 </Section>
                             </Section>
                         </Section>
@@ -144,7 +171,6 @@ class ApplicationDetails extends Component {
                                 </Section>
 
                                 <Section class="dropdown-dividerx"></Section>
-
                                 <Section class="coverLetter">
                                     {this.state.profile.coverLetter}
                                 </Section>

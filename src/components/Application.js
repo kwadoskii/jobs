@@ -1,4 +1,5 @@
 import React from 'react';
+import { host } from '../helper/config';
 import { Link } from 'react-router-dom';
 import Section from './Section';
 
@@ -9,7 +10,7 @@ const Application = (props) => {
             <Section class="col-md-3">
                 <Section class="col-md-12">
                     <Section class="logosizex"
-                        stylex={{ backgroundImage: `url(http://localhost:5000/${img})` }}
+                        stylex={{ backgroundImage: `url(${host}/${img})` }}
                         >
                     </Section>
                 </Section>
@@ -22,8 +23,7 @@ const Application = (props) => {
             </Section>
 
             <Section class="col-md-4">
-                <span className="badge badge-success p-2 pl-3 pr-3">{props.status}</span>
-                
+                <span className="badge badge-success p-2 pl-3 pr-3">{props.status}</span>                
             </Section>
         </Section>
     );

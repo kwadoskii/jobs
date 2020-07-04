@@ -3,8 +3,9 @@ import axios from 'axios';
 import Section from './Section';
 import Button from './Button';
 import avatar from '../images/avatar.png';
+import { host, headers } from '../helper/config';
 import { Link } from 'react-router-dom';
-import { getJwt, removeJwt } from '../helper/jwt';
+import { removeJwt } from '../helper/jwt';
 
 
 class NavbarMenu extends Component {
@@ -28,7 +29,7 @@ class NavbarMenu extends Component {
     }
 
     componentDidMount(){
-        axios.get('http://localhost:5000/profile', { headers: { 'auth-token': getJwt() } })
+        axios.get(host +'/profile', headers)
             .then(({ data }) => {
                 const { name, user } = data.data;
                 this.setState({ name: name, email: user.email })

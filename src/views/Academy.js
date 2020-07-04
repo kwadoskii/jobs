@@ -6,7 +6,7 @@ import NavbarMenu from '../components/NavbarMenu';
 import Section from '../components/Section';
 import Banner from '../components/Banner';
 import Article from '../components/Article';
-import { getJwt } from '../helper/jwt';
+import { host, headers } from '../helper/config';
 import bgimage from '../images/proactive-guide-to-getting-hapy-at-work.jpg' //leave for now to allow image render well
 
 
@@ -20,9 +20,9 @@ class Academy extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/posts', { headers: { 'auth-token': getJwt() } })
-            .then((res) => {
-                this.setState({ posts: res.data });
+        axios.get(host + '/posts', headers)
+            .then(({ data: { data } }) => {
+                this.setState({ posts: data });
             })
             .catch(err => console.log(err));
     }
