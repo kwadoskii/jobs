@@ -3,12 +3,14 @@ import Section      from './Section';
 import { Link }     from 'react-router-dom';
 
 const School = (props) => {
+    const from = props.from === null ? '' : props.from.substring(0, 7); 
+    const to = props.to === null ? '' : props.to.substring(0, 7); 
     return (
         <div>
             <Section class={"dropdown-dividerx mtx"}></Section>
             <Section class={"row"}>
                 <Section class={"col-md-2"}>
-                    <p className="p-0">{props.from.substring(0, 7)} - {props.to.substring(0, 7)}</p>
+                    <p className="p-0">{from} - {to}</p>
                 </Section>
 
                 <Section class={"col-md-7"}>

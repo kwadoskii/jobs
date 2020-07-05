@@ -201,8 +201,8 @@ class Profile extends Component {
                 return e._id === id;
             });
 
-            edu.from = edu.from.substring(0, 10);
-            edu.to = edu.to.substring(0, 10);
+            edu.from = edu.from === null ? '' : edu.from.substring(0, 10);
+            edu.to = edu.to === null ? '' : edu.to.substring(0, 10);
 
             this.setState(prevState => ({
                 ...prevState.modalEditEduForm,
