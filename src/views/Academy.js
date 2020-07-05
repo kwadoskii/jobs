@@ -20,7 +20,7 @@ class Academy extends Component {
     }
 
     componentDidMount() {
-        axios.get(host + '/posts', headers)
+        axios.get(host + '/posts', headers())
             .then(({ data: { data } }) => {
                 this.setState({ posts: data });
             })

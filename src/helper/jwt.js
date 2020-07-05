@@ -1,5 +1,10 @@
 export const getJwt = () => {
-    return localStorage.getItem('auth-token');
+    // if(localStorage.getItem('auth-token')){
+        return localStorage.getItem('auth-token');
+    // }
+    // else {
+    //     getJwt();
+    // }
 }
 
 export const removeJwt = () => {

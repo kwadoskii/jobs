@@ -29,7 +29,7 @@ class NavbarMenu extends Component {
     }
 
     componentDidMount(){
-        axios.get(host +'/profile', headers)
+        axios.get(host +'/profile', headers())
             .then(({ data }) => {
                 const { name, user } = data.data;
                 this.setState({ name: name, email: user.email })

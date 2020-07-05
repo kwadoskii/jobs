@@ -24,7 +24,7 @@ class Application extends Component {
             })
             .catch(err => console.log(err));
 
-        Axios.get(host + '/users/application', headers)
+        Axios.get(host + '/users/application', headers())
             .then(({ data: { data } }) => {
                 this.setState({ application: data });
             })

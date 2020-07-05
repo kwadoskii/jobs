@@ -95,7 +95,7 @@ exports.userSignIn = function (req, res) {
                     id: user._id,
                     email: user.email
                 },
-                exp: Math.floor(Date.now() / 1000) + (10 * 60 * 60), //expires in 1h
+                exp: Math.floor(Date.now() / 1000) + (60 * 60 * 10), //expires in 10hrs
             }, process.env.TOKEN_SECRET);
             res.status(200).send({
                 status: 'success',

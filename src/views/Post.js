@@ -18,7 +18,7 @@ class Post extends Component {
     }
 
     componentDidMount() {
-        axios.get(host + '/posts/' + this.props.match.params.id, headers)
+        axios.get(host + '/posts/' + this.props.match.params.id, headers())
             .then(({ data: { data} }) => {
                 this.setState({ post: data })
             })

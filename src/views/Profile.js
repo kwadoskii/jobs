@@ -7,7 +7,7 @@ import avatar                   from '../images/avatar.png';
 import Modal                    from '../components/Modal';
 import Experience               from '../components/Experience';
 import $                        from 'jquery';
-import { host, headers }                 from '../helper/config';
+import { host, headers }        from '../helper/config';
 import Education                from '../components/Education';
 
 
@@ -30,6 +30,9 @@ class Profile extends Component {
                 education: { school: [] }
             },
             email: '',
+            profileStrength: 0,
+
+            //form controls
             modalAddExpForm: {
                 title: '',
                 company: '',
@@ -48,7 +51,6 @@ class Profile extends Component {
                 to: '',
                 workhere: ''
             },
-            strength: 100,
             dataid: '',
             modalAddEduForm: {
                 name: '',
@@ -84,7 +86,7 @@ class Profile extends Component {
     }
 
     async componentDidMount() {
-        await axios.get(host + '/profile', headers)
+        await axios.get(host + '/profile', headers())
             .then(({ data }) => {
                 this.setState(prevState => ({
                     ...prevState,
@@ -94,6 +96,7 @@ class Profile extends Component {
                     },
                     email: data.data.user.email
                 }));
+                this.profileStrength();
             }).catch(err => console.log(err));
     }
 
@@ -141,7 +144,7 @@ class Profile extends Component {
         const { phone, country, state } = this.state.modalEditProfileForm;
         const address = { country, state };
 
-        axios.patch(host + '/profile/' + this.state.user._id, { phone, address }, headers)
+        axios.patch(host + '/profile/' + this.state.user._id, { phone, address }, headers())
             .then(({ data : { data } }) => {
                 this.setState(prevState => ({
                     ...prevState,
@@ -155,6 +158,7 @@ class Profile extends Component {
                     }
                 }
                 ));
+                this.profileStrength();
             })
             .catch(err => console.log(err));
         $('#editProfile').modal('hide');
@@ -267,11 +271,12 @@ class Profile extends Component {
             });
 
             const { experience } = this.state.user;
-            axios.patch(host + '/profile/' + this.state.user._id, { experience }, headers)
+            axios.patch(host + '/profile/' + this.state.user._id, { experience }, headers())
             .then(async res => {
                 await this.setState({ user: res.data.data, dataid: ''});
                 $('#delExperience').modal('hide');
                 this.setState({ user: user});
+                this.profileStrength();
             })
             .catch(err => console.log(err));
         }        
@@ -287,12 +292,13 @@ class Profile extends Component {
 
             const { education } = this.state.user;
 
-            axios.patch(host + '/profile/' + this.state.user._id, { education }, headers)
+            axios.patch(host + '/profile/' + this.state.user._id, { education }, headers())
                 .then(({ data }) => {
                     this.setState({ user: data.data, dataid: '' });
                     $('#delEducation').modal('hide');
 
-                    this.setState({ user: user, dataid: '' });
+                    this.setState({ user: user, dataid: ''});
+                    this.profileStrength();
                 })
                 .catch(err => console.log(err));
         }
@@ -303,9 +309,10 @@ class Profile extends Component {
         this.state.user.experience.push(this.state.modalAddExpForm);
         const { experience } = this.state.user;
 
-        axios.patch(host + '/profile/' + this.state.user._id, { experience }, headers)
+        axios.patch(host + '/profile/' + this.state.user._id, { experience }, headers())
         .then(res => {
             this.setState({ user: res.data.data });
+            this.profileStrength();
             $('#newExperience').modal('hide');
             this.clearModal();
         })
@@ -332,10 +339,11 @@ class Profile extends Component {
 
         const { experience } = this.state.user;
 
-        axios.patch(host + '/profile/' + this.state.user._id, { experience: experience }, headers)
+        axios.patch(host + '/profile/' + this.state.user._id, { experience: experience }, headers())
             .then(({ data }) => {
                 $('#editExperience').modal('hide');
                 this.setState({dataid: '', user: data.data });
+                this.profileStrength();
                 this.clearModal();
             })
             .catch(err => console.log(err));
@@ -346,9 +354,10 @@ class Profile extends Component {
         this.state.user.education.school.push(this.state.modalAddEduForm);
         const { education } = this.state.user;
 
-        axios.patch(host + '/profile/'+ this.state.user._id, { education }, headers)
+        axios.patch(host + '/profile/'+ this.state.user._id, { education }, headers())
         .then(({ data }) => {
             this.setState({ user: data.data });
+            this.profileStrength();
             $('#newEducation').modal('hide');
             this.clearModal();
         })
@@ -365,7 +374,7 @@ class Profile extends Component {
 
         const { education } = this.state.user;
 
-        axios.patch(host + '/profile/' + this.state.user._id, { education: education }, headers)
+        axios.patch(host + '/profile/' + this.state.user._id, { education: education }, headers())
             .then(async ({ data }) => {
                 this.setState({ user: data.data, dataid: '' });
                 this.clearModal();
@@ -383,6 +392,52 @@ class Profile extends Component {
                 }));
             })
             .catch(err => console.log(err));
+    }
+
+    profileStrength(){
+        const values = {
+            email: 1,
+            name: 1,
+            phone: 2,
+            education: 4,
+            experience: 3,
+            address: 2,
+            coverletter: 3
+        }
+
+        const total = () => {
+            let total = 0;
+            for(let i in values){
+                total += values[i];
+            }
+            return total;
+        }
+
+        let {user} = this.state;
+
+        function getprofileStrength(user){
+            let total = 1;
+            for (let i in values){
+                if (i !== 'email' && i !== 'education' && i !== 'address') {
+                    if (user[i] !== '' && user[i] !== undefined && user[i].length !== 0) {
+                        total += values[i];
+                    }
+                }
+                if (i === 'education' && user[i].school.length !== 0) {
+                    total += values[i];
+                }
+                if(i === 'address' && user[i].country !== '' && user[i].state !== ''){
+                    total += values[i];
+                }
+            }
+            return total;
+        }
+
+        const profileStrength = Math.floor(getprofileStrength(user) / total() * 100);
+        this.setState(prevState => ({
+            ...prevState,
+            profileStrength: profileStrength
+        }));
     }
 
     handleChange(e){
@@ -484,8 +539,8 @@ class Profile extends Component {
                         <Section class="row mt-4 p-4 pb-5 bg-white radiusx shadow-sm">
                             <p className="font-weight-bold">Profile completeness</p>
                             <p className="text-muted">Boost the attention you receive from recruiters! Strengthen your profile by adding contact info, social links, and details about your experience and education.</p>
-                            <Section class="scrolbar radiusx" stylex={{ width: `${this.state.strength}%` }}>
-                                <p className="float-rightx font-weight-bold">{this.state.strength}%</p>
+                            <Section class="scrolbar radiusx" stylex={{ width: `${this.state.profileStrength}%` }}>
+                                <p className="float-rightx font-weight-bold">{this.state.profileStrength}%</p>
                             </Section>
                         </Section>
 

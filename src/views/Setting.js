@@ -47,7 +47,7 @@ class Setting extends Component {
         e.preventDefault();
         
         //export profile to user as a download
-        fetch(host + '/profile/download', headers)
+        fetch(host + '/profile/download', headers())
 			.then(response => {
 				response.blob().then(blob => {
 					let url = window.URL.createObjectURL(blob);
@@ -73,7 +73,7 @@ class Setting extends Component {
         }
         
         e.preventDefault();
-        Axios.patch(host + '/users/changepassword', { password, currentp }, headers)
+        Axios.patch(host + '/users/changepassword', { password, currentp }, headers())
             .then(({ data }) => {
                 this.clearForm();
                 $('#changepassword').modal('hide');

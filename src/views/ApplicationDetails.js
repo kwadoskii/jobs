@@ -43,10 +43,10 @@ class ApplicationDetails extends Component {
     }
 
     componentDidMount() {
-        Axios.get(host + '/users/application/' + this.props.match.params.id, headers)
+        Axios.get(host + '/users/application/' + this.props.match.params.id, headers())
             .then(({data}) => {
                 this.setState({ application: data.data })
-                Axios.get(host + '/profile/' + data.data.user, headers)
+                Axios.get(host + '/profile/' + data.data.user, headers())
                     .then(({ data: { data } }) => {
                         this.setState(prevState => ({
                             ...prevState,
@@ -98,7 +98,7 @@ class ApplicationDetails extends Component {
             }
         }));
         
-        Axios.patch(host + '/users/application/' + this.state.application._id, { attachments: newAttachments }, headers)
+        Axios.patch(host + '/users/application/' + this.state.application._id, { attachments: newAttachments }, headers())
             .then().catch(err => console.log(err));
     }
     
